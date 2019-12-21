@@ -1,0 +1,1771 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>nju_Other</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>Other</h1>
+						<p>其他相关算法整理</p>
+					</header>
+
+
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active">点的凸包</a></li>
+							<li><a href="#first">有9个因数的数</a></li>
+							<li><a href="#second">整除查询</a></li>
+							<li><a href="#third"> 牛的繁殖问题</a></li>
+							<li><a href="#four">数字重组整除问题</a></li>
+							<li><a href="#five">素数和问题</a></li>
+							<li><a href="#six">距离问题</a></li>
+                            <li><a href="#seven">分配问题</a></li>
+
+                            <li><a href="#eight">KD树构造与查找</a></li>
+                            <li><a href="#nine">深度优先遍历</a></li>
+                            <li><a href="#ten">广度优先遍历</a></li>
+                            <li><a href="#eleven">拓扑排序解的个数</a></li>
+                           
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="intro" class="main">
+<h3>1. 点的凸包</h3>
+<blockquote><p>Description</p>
+<p>Convex Hull of a set of points, in 2D plane, is a convex polygon with minimum area such that each point lies either on the boundary of polygon or inside it. Now given a set of points the task is to find the convex hull of points.</p>
+<p>Input</p>
+<p>The first line of input contains an integer T denoting the no of test cases. Then T test cases follow. Each test case contains an integer N denoting the no of points. Then in the next line are N*2 space separated values denoting the points ie x and y.Constraints:1&lt;=T&lt;=100,1&lt;=N&lt;=100,1&lt;=x,y&lt;=1000</p>
+<p>Output</p>
+<p>For each test case in a new line print the points x and y of the convex hull separated by a space in sorted order (increasing by x first, then by y) where every pair is separated from the other by a &#39;,&#39;. If no convex hull is possible print -1.</p>
+<p>Sample Input 1</p>
+<p>2
+    3
+    1 2 3 1 5 6
+    3
+    1 2 4 4 5 1</p>
+<p>Sample Output 1</p>
+<p>1 2, 3 1, 5 6
+    1 2, 4 4, 5 1</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>// https://algorithmist.com/wiki/Monotone_Chain_Convex_Hull.java
+
+class Point implements Comparable&lt;Point&gt;
+{
+    int x,y;
+    Point(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+        
+    // sort first on x then on y
+    public int compareTo(Point other)     
+    {
+        if( x == other.x) 
+            return y - other.y;
+        else 
+            return x - other.x;
+    }
+    
+        // cross product of two vectors
+    public int cross( Point p)
+    {
+        return x * p.y - y * p.x;
+    }
+    
+        // subtraction of two points
+    public Point sub( Point p)
+    {
+        return new Point( x - p.x, y - p.y );
+    }
+
+    public String toString()
+        {
+          return &quot;Point[x=&quot; + x + &quot;,y=&quot; + y + &quot;]&quot;;
+        }
+}
+    
+// Each point passed in via the &quot;points&quot; array should be unique.
+// If duplicates are passed in the returned polygon might not be a convex hull.     
+public Point[] findHull( Point[] points)
+{
+    int n = points.length;
+    Arrays.sort( points);
+    Point[] ans = new Point[2 * n];             // In between we may have a 2n points
+    int k = 0;
+    int start = 0;                  // start is the first insertion point
+    
+
+        
+    for(int i = 0; i &lt; n; i ++)                     // Finding lower layer of hull
+    {
+        Point p = points[i];
+        while( k - start &gt;= 2 &amp;&amp; p.sub( ans[k-1] ).cross(p.sub( ans[k-2] ) ) &gt; 0 )
+            k--;
+        ans[k++] = p; 
+    }
+        
+    k--;                        // drop off last point from lower layer
+    start = k ;                     
+        
+    for(int i = n-1 ; i &gt;= 0 ; i --)                // Finding top layer from hull
+    {
+        Point p = points[i];
+        while( k - start &gt;= 2 &amp;&amp; p.sub( ans[k-1] ).cross(p.sub( ans[k-2] ) ) &gt; 0 )
+            k--;
+        ans[k++] = p; 
+    }
+    k--;                        // drop off last point from top layer
+    
+    return Arrays.copyOf(ans, k);                   // convex hull is of size k
+}
+
+</code></pre>
+							</section>
+							<section id="first" class="main">
+
+<h3>2. 有9个因数的数 </h3>
+<blockquote><p>Description</p>
+<p>Find the count of numbers less than N having exactly 9 divisors</p>
+<p>1&lt;=T&lt;=1000,1&lt;=N&lt;=10^12</p>
+<p>Input</p>
+<p>First Line of Input contains the number of testcases. Only Line of each testcase contains the number of members N in the rival gang.</p>
+<p>Output</p>
+<p>Print the desired output.</p>
+<p>Sample Input 1</p>
+<p>2
+    40
+    5</p>
+<p>Sample Output 1</p>
+<p>1
+    0</p>
+</blockquote>
+
+<p>代码：</p>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		
+		while(total&gt;0) {
+			
+			long number = sc.nextLong();
+			
+			int count = countNumbers(number);
+			System.out.println(count);
+			total--;
+		}
+
+	}
+	
+	// Function to count numbers having 
+	// exactly 9 divisors 
+	    static int countNumbers(long n) { 
+	        int c = 0; 
+	  
+	        int limit = (int) Math.sqrt(n); 
+	  
+	        // Sieve array 
+	        int prime[] = new int[limit + 1]; 
+	  
+	        // initially prime[i] = i 
+	        for (int i = 1; i &lt;= limit; i++) { 
+	            prime[i] = i; 
+	        } 
+	  
+	        // use sieve concept to store the 
+	        // first prime factor of every number 
+	        for (int i = 2; i * i &lt;= limit; i++) { 
+	            if (prime[i] == i) { 
+	                // mark all factors of i 
+	                for (int j = i * i; j &lt;= limit; j += i) { 
+	                    if (prime[j] == j) { 
+	                        prime[j] = i; 
+	                    } 
+	                } 
+	            } 
+	        } 
+	  
+	        // check for all numbers if they can be 
+	        // expressed in form p*q 
+	        for (int i = 2; i &lt;= limit; i++) { 
+	            // p prime factor 
+	            int p = prime[i]; 
+	  
+	            // q prime factor 
+	            int q = prime[i / prime[i]]; 
+	  
+	            // if both prime factors are different 
+	            // if p*q&lt;=n and q!= 
+	            if (p * q == i &amp;&amp; q != 1 &amp;&amp; p != q) { 
+	                c += 1; 
+	            } else if (prime[i] == i) { 
+	  
+	                // Check if it can be expressed as p^8 
+	                if (Math.pow(i, 8) &lt;= n) { 
+	  
+	                    c += 1; 
+	                } 
+	            } 
+	        } 
+	  
+	        return c; 
+	    } 
+	  
+	
+	
+
+}
+
+</code></pre>
+							</section>
+							<section id="second" class="main">
+<h3>3. 整除查询</h3>
+<blockquote><p>Description</p>
+<p>Given an array of positive integers and many queries for divisibility. In every query Q[i], we are given an integer K , we need to count all elements in the array which are perfectly divisible by K.</p>
+<p>Constraints:1&lt;=T&lt;=1001&lt;=N,M&lt;=1051&lt;=A[i],Q[i]&lt;=105</p>
+<p>Input</p>
+<p>The first line of input contains an integer T denoting the number of test cases. Then T test cases follow. Each test case consists of three lines. First line of each test case contains two integers N &amp; M, second line contains N space separated array elements and third line contains M space separated queries.</p>
+<p>Output</p>
+<p>For each test case,In new line print the required count for each query Q[i].</p>
+<p>Sample Input 1</p>
+<p>2
+    6 3
+    2 4 9 15 21 20
+    2 3 5
+    3 2
+    3 4 6
+    2 3</p>
+<p>Sample Output 1</p>
+<p>3 3 2
+    2 2</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			int aLength = sc.nextInt();
+			int bLength  = sc.nextInt();
+			
+			int[] a = new int[aLength];
+			int[] b = new int[bLength];
+			
+			for(int i=0;i&lt;aLength;i++) {
+				a[i] = sc.nextInt();
+			}
+			
+			for(int j=0;j&lt;bLength;j++) {
+				b[j] = sc.nextInt();
+			}
+			
+			int[] result = new int[bLength];
+			
+			result = divideResult(a,b);
+			
+			for(int i=0;i&lt;result.length;i++) {
+				if(i==result.length-1)
+					System.out.print(result[i]+&quot;\n&quot;);
+				else
+					System.out.print(result[i]+&quot; &quot;);
+			}
+			
+			total--;
+		}
+		
+		
+
+	}
+	
+	public static int[] divideResult(int[] a,int[] b) {
+		
+		int[] countArr = new int[b.length];
+		
+		for(int i=0;i&lt;b.length;i++) {
+			for(int j=0;j&lt;a.length;j++) {
+				if(a[j]%b[i]==0) {
+					countArr[i] = countArr[i]+1;
+				}
+			}
+		}
+		
+		
+		
+		return countArr;
+		
+	}
+	
+
+}
+</code></pre>
+
+							</section>
+							<section id="third" class="main">
+<h3>4. 牛的繁殖问题 **</h3>
+<blockquote><p>Description</p>
+<p>Cows in the FooLand city are interesting animals. One of their specialties  is related to producing offsprings. A cow in FooLand produces its first  calve (female calf) at the age of two years and proceeds to produce  other calves (one female calf a year).</p>
+<p>Now the farmer Harold wants to know how many animals would he have at the end of N years, if we  assume that none of the calves die, given that initially, he has only  one female calf?</p>
+<p>explanation:At the end of 1 year, he will have  only 1 cow, at the end of 2 years he will have 2 animals (one parent cow C1 and other baby calf B1 which is the offspring of cow C1).At the end  of 3 years, he will have 3 animals (one parent cow C1 and 2 female  calves B1 and B2, C1 is the parent of B1 and B2).At the end of 4 years,  he will have 5 animals (one parent cow C1, 3 offsprings of C1 i.e. B1,  B2, B3 and one offspring of B1).</p>
+<p>Input</p>
+<p>The first line contains a single integer T denoting the number of test  cases. Each line of the test case contains a single integer N as  described in the problem.</p>
+<p>Output</p>
+<p>For each test case print in new line the number of animals expected at the end of N years modulo 10^9 + 7.</p>
+<p>Sample Input 1                </p>
+<pre><code>2
+2
+4
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>2
+5
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+//牛繁殖问题
+public class Main{
+    static Map&lt;Long, Long&gt; map = new HashMap&lt;Long, Long&gt;();
+
+    public static long fib(long n) {
+        if (n == 0)
+            return 0;
+        if (n == 2 || n == 1)
+            return 1;
+
+        if (map.containsKey(n))
+            return map.get(n);
+        if (n % 2 != 0) {
+            long k = (n + 1) / 2;
+            map.put(n, (fib(k) * fib(k) + fib(k - 1) * fib(k - 1)) % 1000000007);
+        } else {
+            long k = n / 2;
+            map.put(n, (fib(k) * ((fib(k - 1) &lt;&lt; 1) + fib(k))) % 1000000007);
+
+        }
+        return map.get(n);
+    }
+
+    public static void main(String[] args) {
+        Scanner ab = new Scanner(System.in);
+        int t = ab.nextInt();
+        while (t-- &gt; 0) {
+            System.out.println(fib(ab.nextLong() + 1));
+        }
+    }
+
+}
+</code></pre>
+							</section>
+							<section id="four" class="main">
+<h3>5. 数字重组整除问题</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Babul’s favourite number is 17. He likes the numbers which are divisible by 17. This time what he does is that he takes a number N and tries to find  the largest number which is divisible by 17, by rearranging the digits.  As the number increases he gets puzzled with his own task. So you as a  programmer have to help him to accomplish his task.Note: If the number  is not divisible by rearranging the digits, then print “Not Possible”. N may have leading zeros.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>The first line of input contains an integer T denoting the no of test cases. Each of the next T lines contains the number N.</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>For each test case in a new line print the desired output.</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>4
+17
+43
+15
+16
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>17
+34
+51
+Not Possible
+</code></pre>
+</blockquote>
+<pre><code class='language-python' lang='python'>from itertools import permutations
+
+for i in range(int(input())):
+    a=input()
+    b=list(permutations(a))
+    b.sort(reverse=True)
+    for j in b:
+        c=&#39;&#39;.join(j)
+        if int(c)%17==0 and int(c)!=0:
+            print(int(c))
+            break
+    else:
+        print(&#39;Not Possible&#39;)
+</code></pre>
+<pre><code class='language-java' lang='java'>import java.util.*;
+ 
+public class Main
+{		
+	public static int[] rearrange(String str[],int pos,int result[]){
+		
+		//arrage finish
+		if(pos == str.length-1){
+			
+			StringBuffer sb = new StringBuffer();
+ 
+			for(int i = 0; i &lt; str.length;i++){
+ 
+			  sb.append(str[i]);
+ 
+			}
+ 
+			String s = sb.toString();
+			
+			if(Integer.parseInt(s)%17 == 0 &amp;&amp; Integer.parseInt(s) &gt; result[0]){
+				
+				result[0] = Integer.parseInt(s);
+				
+			}
+			
+		}else{
+			
+			//include self	
+			for(int i=pos;i &lt; str.length;i ++){
+				
+				//swap
+				String temp = str[pos];
+				
+				str[pos] = str[i];
+				
+				str[i] = temp;
+				
+				rearrange(str,pos+1,result);
+				
+				str[i] = str[pos];
+				
+				str[pos] = temp;
+				
+			}
+					
+			
+		}
+		
+		return result;
+		
+	}
+	
+	public static void main (String[] args){
+		
+		Scanner scan = new Scanner(System.in);
+	
+		int e_num = Integer.parseInt(scan.nextLine());
+    	
+			while(e_num &gt; 0){
+				
+				String[] str = scan.nextLine().split(&quot;&quot;);
+				
+				int[] result = new int[1];
+				
+				result[0] = 0;
+				
+				result = rearrange(str,0,result);
+						
+				if(result[0] == 0){
+					
+					System.out.println(&quot;Not Possible&quot;);
+					
+				}else{
+				
+					System.out.println(result[0]);
+					
+				}
+    			e_num --;
+	
+			}
+	}
+       
+}
+</code></pre>
+							</section>
+							<section id="five" class="main">
+<h3>6.素数和问题 **</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Given an even number ( greater than 2 ), return two prime numbers whose sum  will be equal to given number. There are several combinations possible.  Print only first such pair. </p>
+<p>NOTE: A solution will always exist, read Goldbach’s conjecture.Also, solve the problem in linear time complexity, i.e., O(n).</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>The first line contains T, the number of test cases. The following T lines  consist of a number each, for which we&#39;ll find two prime numbers.Note:  The number would always be an even number.</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>For every test case print two prime numbers space separated, such that the  smaller number appears first. Answer for each test case must be in a new line.</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>5
+74
+1024
+66 
+8
+9990
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>3 71
+3 1021
+5 61
+3 5
+17 9973
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		while(total&gt;0) {
+			int num = sc.nextInt();
+			
+			
+		findPrimePair(num);
+			
+			total--;
+		}
+
+	}
+	
+
+
+    static boolean SieveOfEratosthenes(int n, boolean isPrime[]) 
+    { 
+        // Initialize all entries of boolean 
+        // array as true. A value in isPrime[i]  
+        // will finally be false if i is Not a  
+        // prime, else true bool isPrime[n+1]; 
+        isPrime[0] = isPrime[1] = false; 
+        for (int i = 2; i &lt;= n; i++) 
+            isPrime[i] = true; 
+      
+        for (int p = 2; p * p &lt;= n; p++) 
+        { 
+            // If isPrime[p] is not changed,  
+            // then it is a prime 
+            if (isPrime[p] == true) 
+            { 
+                // Update all multiples of p 
+                for (int i = p * p; i &lt;= n; i += p) 
+                    isPrime[i] = false; 
+            } 
+        } 
+        return false; 
+    } 
+      
+    // Prints a prime pair with given sum 
+    static void findPrimePair(int n) 
+    { 
+        // Generating primes using Sieve 
+        boolean isPrime[]=new boolean[n + 1]; 
+        SieveOfEratosthenes(n, isPrime); 
+      
+        // Traversing all numbers to find first 
+        // pair 
+        for (int i = 0; i &lt; n; i++) 
+        { 
+            if (isPrime[i] &amp;&amp; isPrime[n - i]) 
+            { 
+                System.out.println(i + &quot; &quot; + (n - i)); 
+                return; 
+            } 
+        } 
+    } 
+
+}
+
+</code></pre>
+<pre><code class='language-python' lang='python'>def SieveOfEratosthenes(n, isPrime):
+    isPrime[0] = isPrime[1] = False
+    for i in range(2, n + 1):
+        isPrime[i] = True
+
+    p = 2
+    while (p * p &lt;= n):
+
+        if (isPrime[p] == True):
+
+            i = p * p
+            while (i &lt;= n):
+                isPrime[i] = False
+                i += p
+        p += 1
+
+
+def findPrimePair(n):
+    isPrime = [0] * (n + 1)
+    SieveOfEratosthenes(n, isPrime)
+
+    for i in range(0, n):
+
+        if (isPrime[i] and isPrime[n - i]):
+            print(i, (n - i))
+            return
+
+
+if __name__ == &quot;__main__&quot;:
+    num = input()
+    for i in range(int(num)):
+        test = int(input())
+        findPrimePair(test)
+</code></pre>
+
+							</section>
+							<section id="six" class="main">
+
+<h3>7.距离问题 </h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>In a given cartesian plane, there are N points. We need to find the Number of Pairs of points(A,B) such that</p>
+<ol start='' >
+<li>Point A and Point B do not coincide.</li>
+<li>Manhattan Distance and the Euclidean Distance between the points should be equal.</li>
+
+</ol>
+<p>Note : Pair of 2 points(A,B) is considered same as Pair of 2 points(B,A).</p>
+<p>Manhattan Distance = |x2-x1|+|y2-y1|</p>
+<p>Euclidean Distance = ((x2-x1)^2 + (y2-y1)^2)^0.5 where points are (x1,y1) and (x2,y2).</p>
+<p>Constraints:1&lt;=T &lt;= 50, 1&lt;=N &lt;= 2*10 ^ 5, 0&lt;=(|Xi|, |Yi|) &lt;= 10^9</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>First Line Consist of T - number of test cases. For each Test case:First Line consist of N , Number of points. Next line contains N pairs contains  two integers Xi and Yi，i.e, X coordinate and the Y coordinate of a Point</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>Print the number of pairs as asked above.</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+2
+1 1
+7 5
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>0
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>package finalTest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.Set;
+
+public class Main {
+	
+	private int x;
+	private int y;
+
+	
+	
+	public Main() {
+		x=0;
+		y=0;
+	}
+	
+	public Main(int x,int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			
+			int num = Integer.parseInt(sc.nextLine());
+			
+			ArrayList&lt;Main&gt; arr = new ArrayList&lt;Main&gt;();
+			
+			for(int i=0;i&lt;num;i++) {
+				String[] points = sc.nextLine().split(&quot;\\s+&quot;);
+				
+				Main p = new Main();
+				
+				p.setX(Integer.parseInt(points[0]));
+				p.setY(Integer.parseInt(points[1]));
+				
+				arr.add(p);
+			}
+			
+			getCount(arr,num);
+			
+			total--;
+		}
+
+	}
+	
+	
+	public static void getCount(ArrayList&lt;Main&gt; arr,int num) {
+		
+		//找到x相等的点的个数
+		HashMap&lt;Integer,Integer&gt; xHash = new HashMap&lt;Integer,Integer&gt;();
+		//找到y相等的点的个数
+		HashMap&lt;Integer,Integer&gt; yHash = new HashMap&lt;Integer,Integer&gt;();
+		//找到重合的点的个数
+		HashMap&lt;Main,Integer&gt; xyHash = new HashMap&lt;Main,Integer&gt;();
+		
+		for(int i=0;i&lt;arr.size();i++) {
+			
+			int curX = arr.get(i).getX();
+			int curY = arr.get(i).getY();
+			
+			if(xHash.containsKey(curX)) {
+				int preX = xHash.get(curX);
+				xHash.replace(curX, preX+1);
+			}else {
+				xHash.put(curX, 1);
+			}
+			
+			if(yHash.containsKey(curY)) {
+				int preY = yHash.get(curY);
+				yHash.replace(curY, preY+1);
+			}else {
+				yHash.put(curY, 1);
+			}
+			
+			if(xyHash.containsKey(arr.get(i))) {
+				int preP = xyHash.get(arr.get(i));
+				xyHash.put(arr.get(i), preP+1);
+			}else {
+				xyHash.put(arr.get(i), 1);
+			}
+		}
+		
+		int xAns=0;
+		int yAns = 0;
+		int xyAns = 0;
+		
+		Set&lt;Integer&gt; xkey = xHash.keySet();
+		Iterator&lt;Integer&gt; xit = xkey.iterator();
+		
+		while(xit.hasNext()) {
+			int xFrequency = xHash.get(xit.next());
+			
+			int sameX = xFrequency*(xFrequency-1)/2;
+			xAns+=sameX;
+		}
+		
+		Set&lt;Integer&gt; ykey = yHash.keySet();
+		Iterator&lt;Integer&gt; yit = ykey.iterator();
+		
+		while(yit.hasNext()) {
+			int yFrequency = yHash.get(yit.next());
+			
+			int sameY = yFrequency*(yFrequency-1)/2;
+			yAns+=sameY;
+		}
+		
+		
+		Set&lt;Main&gt; xykey = xyHash.keySet();
+		Iterator&lt;Main&gt; xyit = xykey.iterator();
+		
+		while(xyit.hasNext()) {
+			int xyFrequency = xyHash.get(xyit.next());
+			
+			int sameXY = xyFrequency*(xyFrequency-1)/2;
+			xyAns+=sameXY;
+		}
+		
+		
+		System.out.println(xAns+yAns-xyAns);
+		
+		
+	}
+
+}
+
+</code></pre>
+							</section>
+							<section id="seven" class="main">
+<h3>8. 分配问题</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>对给定的n个任务与n个人之间的成本矩阵完成成本最低的任务分配策略。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入：第一行为用例个数，之后为每一个用例；用例的第一行为任务个数，即n；用例的第二行为使用逗号隔开的人员完成任务的成本；每一个成本描述包括人员序号、任务序号和成本，使用空格隔开。人员序号和任务序号都是从1到n的整数，序号出现的次序没有固定规则。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出：每一个用例输出一行，从序号为1的人员开始，给出其分配的任务序号，使用空格隔开；使用逗号将多个解隔开。结果按照人员分配的任务序号大小排，第一个人员的任务序号大的放在前面，如果相同则看第二个人员的任务，以此类推。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+4
+2 1 6,1 2 2,1 3 7,1 4 8,1 1 9,2 2 4,2 3 3,2 4 7,3 1 5,3 2 8,3 3 1,3 4 8,4 1 7,4 2 6,4 3 9,4 4 4
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>2 1 3 4
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>//分配问题
+import java.util.*;
+
+//任务分配问题 暴力法
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int testCount=Integer.parseInt(sc.nextLine());
+        for (int i = 0; i &lt; testCount; i++) {
+            int n=Integer.parseInt(sc.nextLine());
+
+            int[][] array=new int[n][n];
+
+            String[] buffs1=sc.nextLine().split(&quot;,&quot;);
+            String[] buffs2;
+            for (int j = 0; j &lt; buffs1.length; j++) {
+                buffs2=buffs1[j].split(&quot; &quot;);
+                int a=Integer.parseInt(buffs2[0])-1;
+                int b=Integer.parseInt(buffs2[1])-1;
+                int c=Integer.parseInt(buffs2[2]);
+                array[a][b]=c;
+
+            }
+             func f=new func(array);
+             f.start();
+        }
+
+    }
+
+}
+//回溯法
+class func{
+    int n;
+    int[][] array;
+    int[] location;//分配的任务号
+    boolean[]  flag;//任务是否已完成，false为未完成
+    //记录分配方案
+    ArrayList&lt;ArrayList&lt;Integer&gt;&gt; finalLocation=new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();
+
+
+    func(int[][] array){
+        this.n=array.length;
+        this.array=array;
+        location=new int[n];
+        flag=new boolean[n];
+        for (int i = 0; i &lt; n; i++) {
+            location[i]=-1;
+            flag[i]=false;
+        }
+    }
+
+    private boolean isdo(int index){
+        return flag[index];
+    }
+
+    private void setflag(int index,boolean b){
+        flag[index]=b;
+    }
+
+    public void place(int i){//从第i个人分配任务
+        for (int j=0;j&lt;n;j++)//对每个任务都尝试分配
+            if(!flag[j]){
+                location[i]=j;
+                setflag(j,true);
+                if(i&lt;n-1){
+                    place(i+1);
+                }else{
+                    int sum=0;
+                    ArrayList&lt;Integer&gt; a=new ArrayList&lt;&gt;();
+                    for (int k = 0; k &lt; n; k++) {
+                        sum=array[k][location[k]]+sum;
+                        a.add(location[k]);
+                    }
+                    a.add(sum);
+                    finalLocation.add(a);
+
+                }
+
+            setflag(j,false);
+            }
+    }
+    public void start(){
+        place(0);
+        //对输出排序
+        Collections.sort(finalLocation, new Comparator&lt;ArrayList&lt;Integer&gt;&gt;() {
+            @Override
+            public int compare(ArrayList&lt;Integer&gt; o1, ArrayList&lt;Integer&gt; o2) {
+
+
+                if(o2.get(n) - o1.get(n)!=0){
+                    return (o1.get(n) - o2.get(n));
+                }else {
+                    for (int i = 0; i &lt; n; i++) {
+                        if(o1.get(i)!=o2.get(i))
+                        return (o2.get(i) - o1.get(i));
+                    }
+                    return 0;
+                }
+            }
+        });
+        //最低的代价，用于对各种分配方式进行评估
+        int minvalue=finalLocation.get(0).get(n);
+        for (int i = 0; i &lt; finalLocation.size(); i++) {
+            ArrayList&lt;Integer&gt; temp=finalLocation.get(i);
+            if(temp.get(n) == minvalue){
+                if(i!=0){
+                    System.out.print(&quot;,&quot;);
+                }
+                for (int j = 0; j &lt; temp.size()-2; j++) {
+                    System.out.print((temp.get(j)+1)+&quot; &quot;);
+                }
+                System.out.print(temp.get(n-1)+1);
+            }else{
+                break;
+            }
+        }
+        System.out.println();
+
+
+    }
+
+}
+
+</code></pre>
+
+							</section>
+							<section id="eight" class="main">
+<h3>9. KD树构造与查找</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>对给定的点集合构造KD树，要求如下：将方差最大的维度作为当前的分割维度，将数据集在分割维度上排序后的中位数作为分割点。程序要检索给定点对应的最近的K个点的坐标。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为测试用例个数，后面为测试用例，每一个用例包含三行，第一行为点集合（点之间用逗号隔开，两个坐标用空格隔开），第二行为检索的点，第三行为K值。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出每一个用例的最近K个点，按照距离从小到大的顺序打印。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+3 5,6 2,5 8,9 3,8 6,1 1,2 9
+8.2 4.6
+2
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>8 6,9 3
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>//KD
+
+import java.util.*;
+
+
+
+public class Main{
+
+    public static class Node {
+        double[] val;
+        int dimension;
+        Node left;
+        Node right;
+
+        Node (double[] val) {
+            this.val = val.clone();
+            left = null;
+            right = null;
+        }
+
+        public int getDimensionNum() {
+            return val.length;
+        }
+
+        public int getDimension() {
+            return dimension;
+        }
+
+        public void setDimension(int dimension) {
+            this.dimension = dimension;
+        }
+
+        public double getVal (int n) {
+            return val[n];
+        }
+
+        public String toString() {
+            return Arrays.toString(val);
+        }
+
+    }
+
+    /**
+     * KD树的构造方法
+     * @params: [nodes]
+     * @return: contest3.N2_KDTree.Node
+     * @time: 2019/11/22 16:10
+     */
+    public static Node KDTree (List&lt;Node&gt; nodes) {
+
+        /** 构造KD树的递归终止条件 */
+        //System.out.println(&quot;len:&quot; + nodes.size() + &quot; : &quot; + nodes.toString());
+        if (nodes.size() == 0)
+            return null;
+        if (nodes.size() == 1)
+            return nodes.get(0);
+        /** 找分割维度(方差最大的维度)，用divideDimension记录 */
+        int dimensionCount = nodes.get(0).getDimensionNum();
+        int nodesCount = nodes.size();
+        int cuttingDimension = -1;
+        int maxVariance = -1;
+        for (int i = 0 ; i &lt; dimensionCount; i++) {
+            int average = 0;
+            for (int j = 0; j &lt; nodesCount; j++) {
+                average += nodes.get(j).getVal(i);
+            }
+            average /= nodesCount;
+            int variance = 0;
+            for (int j = 0; j &lt; nodesCount; j++) {
+                variance += Math.pow(nodes.get(j).getVal(i) - average, 2);
+            }
+            variance /= nodesCount;
+            if (variance &gt; maxVariance) {
+                maxVariance = variance;
+                cuttingDimension = i;
+            }
+        }
+        /** 构造KD树，递归主方法 */
+        int n = cuttingDimension;    //需确定一个final值，采取重构造方法
+        nodes.sort(Comparator.comparingDouble(node -&gt; node.getVal(n)));
+        // 对list进行自定义排序：lambda表达式写法
+        //System.out.println(&quot;排序后：&quot; + nodes.toString());
+        Node root = nodes.get(nodesCount / 2);
+        root.setDimension(n);
+        //System.out.println(&quot;root : &quot; + root.toString());
+        List&lt;Node&gt; nodesL = nodes.subList(0, nodesCount / 2);
+        root.left = KDTree(nodesL);
+        List&lt;Node&gt; nodesR = nodes.subList(nodesCount / 2 + 1, nodesCount);
+        root.right = KDTree(nodesR);
+        return root;
+
+    }
+
+    /**
+     * KD树查找k个最近点
+     * @params: [root, target, n]
+     * @return: java.util.List&lt;contest3.N2_KDTree.Node&gt;
+     * @time: 2019/11/22 16:09
+     */
+    public static List&lt;Node&gt; search (Node root, Node target, int k) {
+
+        Map&lt;Node, Double&gt; node_distMap = new HashMap&lt;&gt;();
+        PriorityQueue&lt;Node&gt; maxHeap = new PriorityQueue&lt;&gt;(k, new Comparator&lt;Node&gt;() {
+            @Override
+            // 重载成按distMap里存储的距离进行排序的最大堆
+            public int compare(Node o1, Node o2) {
+                if (node_distMap.get(o2) - node_distMap.get(o1) &gt; 0)
+                    return 1;
+                else if (node_distMap.get(o2) - node_distMap.get(o1) &lt; 0)
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+        double[] targetVal = target.val;
+        Stack&lt;Node&gt; find = new Stack&lt;&gt;();
+        /** 先深入遍历一条分支至叶节点，并全程压栈 */
+        while (root != null) {
+            find.push(root);
+            int d = root.getDimension();
+            if (targetVal[d] &lt;= root.val[d])
+                root = root.left;
+            else
+                root = root.right;
+        }
+        /** 递归回溯，在回溯过程中判断是否应进入某节点的另一分支进行DFS */
+        while (!find.isEmpty()) {
+            Node p = find.pop();
+            /** 用k最大堆判断p节点距离是否符合结果要求 */
+            int d = p.getDimension();
+            double dist = Math.sqrt(Math.pow(target.getVal(0) - p.getVal(0), 2) + Math.pow(target.getVal(1) - p.getVal(1), 2));
+            node_distMap.put(p, dist);  // 所有遍历过的节点的距离信息都记录入map
+            if (maxHeap.size() &lt; k)
+                maxHeap.offer(p);
+            else if (maxHeap.size() == k &amp;&amp; dist &lt; node_distMap.get(maxHeap.peek())) {
+                maxHeap.poll();
+                maxHeap.offer(p);
+            }
+            /** 断是否应该检索p的另一边子树 */
+            if (node_distMap.get(maxHeap.peek()) &gt; Math.abs(target.getVal(d) - p.getVal(d))) {
+                // 若当前第k近距离大于target节点到p节点的维度距离，则应检查另一边子树
+                if (node_distMap.containsKey(p.left))
+                    // 判断哪边子树是未检查过的
+                    find.push(p.right);
+                else
+                    find.push(p.left);
+                /** 检查该分支，则深入该分支至叶节点,全程压栈 */
+                p = find.pop();
+                while (p != null) {
+                    find.push(p);
+                    d = p.getDimension();
+                    if (targetVal[d] &lt;= p.val[d])
+                        p = p.left;
+                    else
+                        p = p.right;
+                }
+            }
+
+        }
+        List&lt;Node&gt; result = new ArrayList&lt;&gt;();
+        //System.out.println(&quot;size&quot; + maxHeap.size());
+        while (maxHeap.size() &gt; 0) {
+            //System.out.println(maxHeap.peek().toString() + &quot;的距离：&quot; + node_distMap.get(maxHeap.peek()));
+            result.add(0, maxHeap.poll());
+        }
+        return result;
+
+    }
+
+    /**
+     * KD树的打印方法
+     * @params: [root]
+     * @return: void
+     * @time: 2019/11/22 16:10
+     */
+    public static void printKDTree (Node root) {
+        if (root == null)
+            return;
+        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            Node printNode = queue.poll();
+            System.out.println(Arrays.toString(printNode.val));
+            if (printNode.left != null)
+                queue.offer(printNode.left);
+            if (printNode.right != null)
+                queue.offer(printNode.right);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int rounds = Integer.valueOf(scan.nextLine());
+        for (int i = 0; i &lt; rounds; i++) {
+            List&lt;Node&gt; nodeList = new ArrayList&lt;&gt;();
+            String nodesLine = scan.nextLine();
+            String targetLine = scan.nextLine();
+            int n = Integer.valueOf(scan.nextLine());
+
+            String[] nodes = nodesLine.split(&quot;,&quot;);
+            for (int j = 0; j &lt; nodes.length; j++) {
+                String[] nodeStr = nodes[j].split(&quot; &quot;);
+                double[] nodeVal = new double[2];
+                for (int k = 0; k &lt; 2; k++) {
+                    nodeVal[k] = Double.valueOf(nodeStr[k]);
+                }
+                Node node = new Node(nodeVal);
+                nodeList.add(node);
+            }
+            String[] targetStr = targetLine.split(&quot; &quot;);
+            double[] targetVal = new double[2];
+            for (int k = 0; k &lt; 2; k++) {
+                targetVal[k] = Double.valueOf(targetStr[k]);
+            }
+            Node target = new Node(targetVal);
+            List&lt;Node&gt; result = search(KDTree(nodeList), target, n);
+            for (int j = 0; j &lt; result.size() - 1; j++) {
+                System.out.printf((result.get(j).getVal(0) + &quot; &quot; + result.get(j).getVal(1) + &quot;,&quot;).replaceAll(&quot;\\.0&quot;, &quot;&quot;));
+            }
+            System.out.println((result.get(result.size() - 1).getVal(0) + &quot; &quot; + result.get(result.size() - 1).getVal(1)).replaceAll(&quot;\\.0&quot;, &quot;&quot;));
+        }
+
+    }
+
+
+}
+</code></pre>
+
+							</section>
+							<section id="nine" class="main">
+<h3>10.深度优先遍历</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>按照给定的起始顶点深度优先遍历给定的无向图，尝试所有可能的遍历方式，打印遍历过程中出现的最大深度。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行是用例个数，后面每个用例使用多行表示，用例的第一行是图中节点的个数n和起始点，用空格隔开，后面n+1行为图的邻接矩阵，其中第一行为节点名称。值之间使用空格隔开。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出深度优先遍历中遇到的最大深度。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+4 a
+a b c d
+a 0 1 1 0
+b 1 0 1 0
+c 1 1 0 1
+d 0 0 1 0
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>4
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+
+    public static int num;
+
+    public static void main(String args[]){
+
+        Scanner sc = new Scanner(System.in);
+
+        int total = Integer.valueOf(sc.nextLine());
+
+        while(total&gt;0){
+
+            String numAndStart = sc.nextLine();
+
+            num = Integer.valueOf(numAndStart.split(&quot;\\s+&quot;)[0]);
+
+            String start = numAndStart.split(&quot;\\s+&quot;)[1];
+
+            String points = sc.nextLine();
+
+            String[] pValue = points.split(&quot;\\s+&quot;);
+
+            int startNum=0;
+
+            for(int i=0;i&lt;pValue.length;i++){
+                if(pValue[i].equals(start)){
+                    startNum=i;
+                    break;
+                }
+
+            }
+
+            int[][] edges = new int[num][num];
+
+            for(int i=0;i&lt;num;i++){
+                String value = sc.nextLine();
+
+                String[] arr = value.split(&quot;\\s+&quot;);
+
+                for(int j=0;j&lt;num;j++){
+                    edges[i][j] = Integer.valueOf(arr[j+1]);
+                }
+            }
+
+
+            DFS(startNum,edges,num);
+
+
+
+            total--;
+        }
+    }
+
+
+
+
+    public static   Stack&lt;Integer&gt; path = new Stack&lt;&gt;();
+
+    public static  int length=0;
+
+    public static void DFS(int start,int[][] edges,int num){
+          boolean[] visited = new boolean[num];
+
+        for(int i=0;i&lt;num;i++)
+            visited[i]=false;
+
+        visited[start]=true;
+        path.push(start);
+
+        DFSdetail(start,edges,visited);
+
+
+        System.out.println(length);
+
+
+    }
+
+
+    public static void DFSdetail(int start,int[][] edges,boolean[] visited){
+
+        //与start邻接但是未遍历的点
+        ArrayList&lt;Integer&gt; neibor = new ArrayList&lt;Integer&gt;();
+
+        for(int i=0;i&lt;num;i++){
+            if(edges[start][i]==1&amp;&amp;!visited[i]) {
+                neibor.add(i);
+            }
+        }
+
+        if(neibor.size()==0){
+            if(path.size()&gt;length)
+                length=path.size();
+            path.pop();
+
+            //return;
+        }else {
+
+            for (int i = 0; i &lt; neibor.size(); i++) {
+                path.push(neibor.get(i));
+                visited[neibor.get(i)] = true;
+                DFSdetail(neibor.get(i), edges, visited);
+            }
+        }
+
+    }
+}
+
+</code></pre>
+
+							</section>
+							<section id="ten" class="main">
+<h3>11.广度优先遍历</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>按照给定的起始顶点广度优先遍历图，每一次通过字母顺序选择顶点查找下一层邻接点，打印遍历顺序。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为测试用例个数，后面每一个用例用多行表示，用例第一行是节点个数n和开始顶点，用空格隔开，后面n+1行为图的邻接矩阵，其中第一行为节点名称。值之间使用空格隔开。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出遍历顺序，用空格隔开</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+4 a
+a b c d
+a 0 1 1 0
+b 1 0 1 0
+c 1 1 0 1
+d 0 0 1 0
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>a b c d
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+    public static int num;
+
+    public static void main(String args[]){
+
+        Scanner sc = new Scanner(System.in);
+
+        int total = Integer.valueOf(sc.nextLine());
+
+        while(total&gt;0){
+
+            String numAndStart = sc.nextLine();
+
+            num = Integer.valueOf(numAndStart.split(&quot;\\s+&quot;)[0]);
+
+            String start = numAndStart.split(&quot;\\s+&quot;)[1];
+
+            String points = sc.nextLine();
+
+            String[] pValue = points.split(&quot;\\s+&quot;);
+
+            int startNum=0;
+
+            for(int i=0;i&lt;pValue.length;i++){
+                if(pValue[i].equals(start)){
+                    startNum=i;
+                    break;
+                }
+
+            }
+
+            int[][] edges = new int[num][num];
+
+            for(int i=0;i&lt;num;i++){
+                String value = sc.nextLine();
+
+                String[] arr = value.split(&quot;\\s+&quot;);
+
+                for(int j=0;j&lt;num;j++){
+                    edges[i][j] = Integer.valueOf(arr[j+1]);
+                }
+            }
+
+
+            BFS(startNum,edges,num);
+
+            Stack&lt;Integer&gt; re = new Stack&lt;&gt;();
+
+            while (!path.isEmpty()){
+                re.push(path.pop());
+            }
+            while (!re.isEmpty()){
+                int index = re.pop();
+                if(re.isEmpty())
+                  System.out.print(pValue[index]+&quot;\n&quot;);
+                else
+                    System.out.print(pValue[index]+&quot; &quot;);
+
+            }
+
+
+
+            total--;
+        }
+    }
+
+
+    public static Stack&lt;Integer&gt; path = new Stack&lt;&gt;();
+
+    public static  int length=0;
+
+    public static void BFS(int start,int[][] edges,int nums){
+        boolean[] visited = new boolean[num];
+
+        ArrayList&lt;Integer&gt; level = new ArrayList&lt;&gt;();
+
+        for(int i=0;i&lt;num;i++)
+            visited[i]=false;
+
+        visited[start]=true;
+        path.push(start);
+
+        level.add(start);
+
+        BFSdetail(level,edges,visited);
+
+
+
+
+    }
+
+    public static void BFSdetail(ArrayList&lt;Integer&gt; level,int[][] edges,boolean[] visited){
+
+        int length = level.size();
+
+        int neiborCount = 0;
+
+        for(int i=0;i&lt;length;i++){
+            int value = level.get(i);
+
+            for(int j=0;j&lt;num;j++) {
+                if (edges[value][j]==1&amp;&amp;!visited[j]){
+                    neiborCount++;
+                    level.add(j);
+                    visited[j]=true;
+                    path.push(j);
+                }
+
+            }
+        }
+
+        for(int i=0;i&lt;length;i++)
+            level.remove(0);
+
+        if(neiborCount!=0){
+            BFSdetail(level,edges,visited);
+        }
+
+
+
+
+    }
+}
+
+</code></pre>
+
+							</section>
+							<section id="eleven" class="main">
+<h3>12.拓扑排序解的个数</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>给定有向无环图中所有边，计算图的拓扑排序解的个数。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为用例个数，后面每一行表示一个图中的所有边，边的起点和终点用空格隔开，边之间使用逗号隔开。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出拓扑排序解的个数。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+a c,b c,c d,d e,d f,e g,f g
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>4
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+	
+	
+	private String startPoint;
+	private String endPoint;
+	
+	Main(){
+		startPoint = &quot;&quot;;
+		endPoint=&quot;&quot;;
+	}
+	
+	Main(String startPoint,String endPoint){
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
+	}
+	
+	
+	
+	public String getStartPoint() {
+		return startPoint;
+	}
+
+	public void setStartPoint(String startPoint) {
+		this.startPoint = startPoint;
+	}
+
+	public String getEndPoint() {
+		return endPoint;
+	}
+
+	public void setEndPoint(String endPoint) {
+		this.endPoint = endPoint;
+	}
+
+	public static void main(String[] args) {
+	
+		Scanner  sc = new Scanner(System.in);
+		
+		int total = Integer.valueOf(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			String edges = sc.nextLine();
+			
+			String[] eachEdge = edges.split(&quot;,&quot;);
+			
+			
+			topology(eachEdge);
+			
+			total--;
+		}
+
+	}
+	
+	public static void topology(String[] edges) {
+		
+		ArrayList&lt;String&gt; pointArr = new ArrayList&lt;String&gt;();
+		ArrayList&lt;Integer&gt; inArr = new ArrayList&lt;Integer&gt;();
+	
+		ArrayList&lt;Main&gt; edgeArr = new ArrayList&lt;Main&gt;();
+		
+		//存放点和边
+		for(int i=0;i&lt;edges.length;i++) {
+			
+			String start = edges[i].split(&quot;\\s+&quot;)[0];
+			String end = edges[i].split(&quot;\\s+&quot;)[1];
+			
+			//edge.put(start, end);
+			
+			Main edge = new Main();
+			
+			edge.setStartPoint(start);
+			edge.setEndPoint(end);
+			
+			edgeArr.add(edge);
+			
+			if(!pointArr.contains(start)) {
+				
+				pointArr.add(start);
+				inArr.add(0);
+			}
+			
+			
+			if(pointArr.contains(end)) {
+                int position = pointArr.indexOf(end);
+				
+				int privious = inArr.get(position);
+				
+				inArr.set(position, privious+1);
+			}else {
+				pointArr.add(end);
+				inArr.add(1);
+			}
+			
+			
+		}
+	int totalCount = 1;
+		while(inArr.contains(0)) {
+			int count = 0;
+			ArrayList&lt;String&gt; out = new ArrayList&lt;String&gt;();
+			for(int i=0;i&lt;inArr.size();i++) {
+				if(inArr.get(i)==0) {
+					
+					String p = pointArr.get(i);
+					out.add(p);
+				
+					pointArr.remove(i);
+					inArr.remove(i);
+					i--;
+					count++;
+				}
+			}
+			
+			for(int i=0;i&lt;out.size();i++) {
+				String s = out.get(i);
+				
+				for(int j=0;j&lt;edgeArr.size();j++) {
+					if(edgeArr.get(j).getStartPoint().equals(s)) {
+						String endP = edgeArr.get(j).getEndPoint();
+						
+						int index = pointArr.indexOf(endP);
+						
+						int pValue = inArr.get(index);
+						
+						inArr.set(index, pValue-1);
+					}
+				}
+				
+			}
+			
+			totalCount = totalCount*mult(count);
+			
+		}
+		
+		
+		System.out.println(totalCount);
+	}
+	
+	
+	public static int mult(int count) {
+		if(count==1)
+			return 1;
+		
+		return count*mult(count-1);	
+	}
+	
+
+}
+
+</code></pre>
+
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Say Something</h2>
+							<p>Just keep going on~~~<br/>
+							Optimism is the essential part of life<br/>
+							Whatever it happens in life 
+							it will be ok<br/>
+							There is nothing important except life<br/>
+							Alive with love <br/>
+						You can make it</p>
+							
+						</section>
+						<section>
+							<h2>Contact</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>NanJing University,HanKou Roud NO.22</dd>
+								<dt>Phone</dt>
+								<dd>188****8500</dd>
+								<dt>Email</dt>
+								<dd><a href="#">gjcbetty@163.com</a></dd>
+							</dl>
+							
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

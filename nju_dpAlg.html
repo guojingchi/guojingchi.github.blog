@@ -1,0 +1,1296 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>nju_dp</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>DynamicProgramming</h1>
+						<p>动态规划相关算法整理</p>
+					</header>
+
+
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active">订单问题</a></li>
+							<li><a href="#first">数组查询</a></li>
+							<li><a href="#second">按照要求保留数组元素使和最大</a></li>
+							<li><a href="#third">花最少的钱购买蔬菜</a></li>
+							<li><a href="#four">是否能通过考试</a></li>
+							<li><a href="#five">无重复字符子集</a></li>
+							<li><a href="#six">矩阵计算</a></li>
+                            <li><a href="#seven">最小化初始点</a></li>
+                            <li><a href="#eight">书本分发</a></li>
+                            <li><a href="#nine">漆狗屋</a></li>
+                            <li><a href="#ten">棋盘覆盖问题</a></li>
+                            <li><a href="#eleven">最长公共子序列</a></li>
+
+                           
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="intro" class="main">
+<h3>1.订单问题</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Rahul and Ankit are the only two waiters in Royal Restaurant. Today, the  restaurant received N orders. The amount of tips may differ when handled by different waiters, if Rahul takes the ith order, he would be tipped  Ai rupees and if Ankit takes this order, the tip would be Bi rupees.In  order to maximize the total tip value they decided to distribute the  order among themselves. One order will be handled by one person only.  Also, due to time constraints Rahul cannot take more than X orders and  Ankit cannot take more than Y orders. It is guaranteed that X + Y is  greater than or equal to N, which means that all the orders can be  handled by either Rahul or Ankit. Find out the maximum possible amount  of total tip money after processing all the orders.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>•    The first line contains one integer, number of test cases.</p>
+<p>•    The second line contains three integers N, X, Y.</p>
+<p>•    The third line contains N integers. The ith integer represents Ai.</p>
+<p>•    The fourth line contains N integers. The ith integer represents Bi.</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>Print a single integer representing the maximum tip money they would receive.</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+5 3 3
+1 2 3 4 5
+5 4 3 2 1
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>21
+</code></pre>
+</blockquote>
+<p>&nbsp;</p>
+<pre><code class='language-java' lang='java'>import java.util.*;
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		
+		while(total&gt;0) {
+			
+			int N = sc.nextInt();
+			int X = sc.nextInt();
+			int Y = sc.nextInt();
+			
+			int[] a = new int[N];
+			int[] b = new int[N];
+			
+			for(int i=0;i&lt;N;i++)
+				a[i] = sc.nextInt();
+			for(int i=0;i&lt;N;i++)
+				b[i] = sc.nextInt();
+			
+			getMax(a,b,N,X,Y);
+			
+			total--;
+		}
+
+	}
+	
+	
+	public static void getMax(int[] a,int[] b,int N,int X,int Y) {
+		
+		int[][] dp = new int[X+1][Y+1];
+		
+		dp[0][0] = 0;
+		
+		for(int i=1;i&lt;=X;i++)
+			dp[i][0] = a[i-1]+dp[i-1][0];
+		
+		for(int i=1;i&lt;=Y;i++)
+			dp[0][i] = b[i-1]+dp[0][i-1];
+		
+		for(int i=1;i&lt;=X;i++) {
+			for(int j=1;j&lt;=Y;j++) {
+				if(i+j&lt;=N) {
+					int newA = a[i+j-1]+dp[i-1][j];
+					int newB = b[i+j-1]+dp[i][j-1];
+					
+					dp[i][j] = Math.max(newA, newB);
+				}else {
+					dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+				}
+			}
+		}
+		
+	
+		System.out.println(dp[X][Y]);
+	}
+	
+
+}
+
+</code></pre>
+							</section>
+							<section id="first" class="main">
+<h3>2.数组查询</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Given an array, the task is to complete the function which finds the maximum  sum subarray, where you may remove at most one element to get the  maximum sum.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>第一行为测试用例个数T；后面每两行表示一个用例，第一行为用例中数组长度N，第二行为数组具体内容。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>每一行表示对应用例的结果。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+5
+1 2 3 -4 5
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>11
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>package finalRange;
+
+import java.util.*;
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			int length = Integer.parseInt(sc.nextLine());
+			
+			String[] arr = sc.nextLine().split(&quot;\\s+&quot;);
+			
+			int[] arrNum = new int[arr.length];
+			
+			for(int i=0;i&lt;length;i++)
+				arrNum[i] = Integer.parseInt(arr[i]);
+			
+			getSum(arrNum,length);
+			
+			total--;
+		}
+
+	}
+	
+	
+	public static void getSum(int[] arr,int length) {
+		
+		int[] preSum = new int[length];
+		int[] backSum = new int[length];
+		
+		preSum[0] = arr[0];
+		
+		int cur = arr[0];
+		int max = arr[0];
+		
+		for(int i=1;i&lt;length;i++) {
+			preSum[i] = Math.max(arr[i], arr[i]+cur);
+			cur = preSum[i];
+			max = Math.max(max, cur);
+		}
+		
+		cur = arr[length-1];
+		max = arr[length-1];
+		
+		backSum[length-1] = arr[length-1];
+		for(int i=length-2;i&gt;=0;i--) {
+			backSum[i] = Math.max(arr[i], arr[i]+cur);
+			cur = backSum[i];
+			max = Math.max(max, cur);
+		}
+		
+		
+		for(int i=1;i&lt;length-1;i++) {
+			max = Math.max(max, preSum[i-1]+backSum[i+1]);
+		}
+		
+		System.out.println(max);
+	}
+	
+
+}
+</code></pre>
+
+							</section>
+							<section id="second" class="main">
+<h3>3.按照要求保留数组元素使和最大</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Given an array of N numbers, we need to maximize the sum of selected numbers. At each step, you need to select a number Ai, delete one occurrence of  Ai-1 (if exists) and Ai each from the array. Repeat these steps until  the array gets empty. The problem is to maximize the sum of selected  numbers.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>The first line of the input contains T denoting the number of the test  cases. For each test case, the first line contains an integer n denoting the size of the array. Next line contains n space separated integers  denoting the elements of the array.</p>
+<p>Constraints:1&lt;=T&lt;=100，1&lt;=n&lt;=50，1&lt;=A[i]&lt;=20 </p>
+<p>Note: Numbers need to be selected from maximum to minimum.</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>For each test case, the output is an integer displaying the maximum sum of selected numbers. </p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>2
+3
+1 2 3
+6
+1 2 2 2 3 4
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>4
+10
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>package finalRange;
+
+import java.util.*;
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+        int total = Integer.valueOf(sc.nextLine());
+		
+		while(total&gt;0) {
+			int num = Integer.valueOf(sc.nextLine());
+			
+			String[] text = sc.nextLine().split(&quot;\\s+&quot;);
+			
+			int[] arr = new int[num];
+			
+			for(int i=0;i&lt;num;i++)
+				arr[i] = Integer.valueOf(text[i]);
+			
+			
+			exCount(arr,num);
+			sum=0;
+			total--;
+		}
+
+	}
+	public static int sum=0;
+	
+	public static void exCount(int[] arr,int num) {
+		
+		if(num!=0) {
+		 Arrays.sort(arr);
+		
+		 int max = arr[num-1];
+		 sum+=max;
+		 
+			int split=num+1;
+		for(int i=num-2;i&gt;=0;i--) {
+			
+				if(arr[i]==max-1) {
+					split=i;
+					break;
+				}
+		}
+		
+		//没有差一的数
+		if(split&gt;num) {
+			int[] newArr = new int[num-1];
+			System.arraycopy(arr, 0, newArr, 0, num-1);
+			exCount(newArr,num-1);
+		}else {
+			int[] newArr = new int[num-2];
+			System.arraycopy(arr, 0, newArr, 0, split);
+			System.arraycopy(arr, split+1, newArr, split, num-split-1-1);
+			exCount(newArr,num-2);
+		}
+		}else {
+			System.out.println(sum);
+			
+		}
+		
+	}
+
+}
+
+</code></pre>
+
+							</section>
+							<section id="third" class="main">
+<h3>4.花最少的钱购买蔬菜</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Rahul wanted to purchase vegetables mainly brinjal, carrot and tomato. There  are N different vegetable sellers in a line. Each vegetable seller sells all three vegetable items, but at different prices. Rahul, obsessed by  his nature to spend optimally, decided not to purchase same vegetable  from adjacent shops. Also, Rahul will purchase exactly one type of  vegetable item (only 1 kg) from one shop. Rahul wishes to spend minimum  money buying vegetables using this strategy. Help Rahul determine the  minimum money he will spend.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>First line indicates number of test cases T. Each test case in its first line contains N denoting the number of vegetable sellers in Vegetable  Market. Then each of next N lines contains three space separated  integers denoting cost of brinjal, carrot and tomato per kg with that  particular vegetable seller.</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>For each test case, output the minimum cost of shopping taking the mentioned conditions into account in a separate line.</p>
+<p>Constraints:1 &lt;= T &lt;= 101 &lt;= N &lt;= 100000 Cost of each vegetable(brinjal/carrot/tomato) per kg does not exceed 10^4</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+3
+1 50 50
+50 50 50
+1 50 50
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>52
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>package finalRange;
+
+import java.util.*;
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		 int total = Integer.valueOf(sc.nextLine());
+		while(total&gt;0) {
+			int num = Integer.valueOf(sc.nextLine());
+			
+			int[][] dp = new int[3][num];
+			for(int i=0;i&lt;num;i++) {
+				String value = sc.nextLine();
+                String[] arr = value.split(&quot;\\s+&quot;);
+                
+				dp[0][i] = Integer.valueOf(arr[0]);
+				dp[1][i] = Integer.valueOf(arr[1]);
+				dp[2][i] = Integer.valueOf(arr[2]);
+				
+			}
+			
+			cal(dp,num);
+			total--;
+		}
+
+	}
+	
+	
+	public static void cal(int[][] dp,int num) {
+		
+		for(int i=1;i&lt;num;i++) {
+			dp[0][i] = Math.min(dp[1][i-1], dp[2][i-1])+dp[0][i];
+			dp[1][i] = Math.min(dp[0][i-1], dp[2][i-1])+dp[1][i];
+			dp[2][i] = Math.min(dp[1][i-1], dp[0][i-1])+dp[2][i];
+		}
+		
+		int min = Math.min(dp[0][num-1], dp[1][num-1]);
+		min = Math.min(min, dp[2][num-1]);
+		
+		System.out.println(min);
+	}
+	
+}
+
+</code></pre>
+							</section>
+							<section id="four" class="main">
+<h3>5.是否能通过考试</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>小张想要通过明天的考试。他知道考题的分值分布，也知道考试中要拿到每一个题目需要耗费的时间。假设考试时长为h，共n个题目，需要拿到p分才能通过考试。现在已知每个考题的得分与耗时，请你判断小张能否通过合理安排时间，而通过考试，并给出通过考试的最短时间。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为测试用例个数.每一个用例有若干行，第一行为任务数量n、考试时常h、通过分数p，下面的n行是每一个题目的耗时和得分。所有数值用空格分开。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>对每一个用例输出一行，如果能够通过考试，则输出“YES”和消耗最短时间，用空格隔开。 否则，输出“NO”。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+5 40 21 
+12 10 
+16 10 
+20 10 
+24 10 
+8 3 
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>YES 36
+</code></pre>
+</blockquote>
+<pre><code>package finalRange;
+
+import java.util.*;
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		 int total = Integer.valueOf(sc.nextLine());
+		while(total&gt;0) {
+			String[] rules =sc.nextLine().split(&quot;\\s+&quot;);
+			
+			int count = Integer.valueOf(rules[0]);
+			int time = Integer.valueOf(rules[1]);
+			int pass = Integer.valueOf(rules[2]);
+			
+			int[] cost = new int[count];
+			int[] grade = new int[count];
+			for(int i=0;i&lt;count;i++) {
+				String[] limit = sc.nextLine().split(&quot;\\s+&quot;);
+				cost[i] = Integer.valueOf(limit[0]);
+				grade[i] = Integer.valueOf(limit[1]);
+			}
+			
+			int[][] dp = new int[count+1][time+1];
+			
+			boolean flag = false;
+			
+			int re = 0;
+			
+			for(int i=1;i&lt;=count;i++){
+	            for(int j=1;j&lt;=time;j++){
+	                if(j&gt;=cost[i-1]){
+	                    dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-cost[i-1]]+grade[i-1]);
+	                }else {
+	                    dp[i][j] = dp[i-1][j];
+	                }
+
+	                if(dp[i][j]&gt;pass){
+	                    flag = true;
+	                    re = j;
+	                    break;
+
+	                }
+	            }
+	        }
+
+	        if(flag){
+	            System.out.println(&quot;YES &quot;+re);
+	        }else {
+	            System.out.println(&quot;NO&quot;);
+	        }
+			
+			total--;
+		}
+
+	}
+	
+}
+
+</code></pre>
+							</section>
+							<section id="five" class="main">
+<h3>6. 无重复字符子集问题 **</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Mike is a lawyer with the gift of photographic memory. He is so good with it that he can tell you all the numbers on a sheet of paper by having a  look at it without any mistake. Mike is also brilliant with subsets so  he thought of giving a challange based on his skill and knowledge to  Rachael. Mike knows how many subset are possible in an array of N  integers. The subsets may or may not have the different sum. The  challenge is to find the maximum sum produced by any subset under the  condition:</p>
+<p><strong>The elements present in the subset should not have any digit in common.</strong></p>
+<p>Note: Subset {12, 36, 45} does not have any digit in common and Subset {12,  22, 35} have digits in common.Rachael find it difficult to win the  challenge and is asking your help. Can youhelp her out in winning this  challenge?</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>First Line of the input consist of an integer T denoting the number of test  cases. Then T test cases follow. Each test case consist of a numbe N  denoting the length of the array. Second line of each test case consist  of N space separated integers denoting the array elements.</p>
+<p>Constraints:</p>
+<p>1 &lt;= T &lt;= 100</p>
+<p>1 &lt;= N &lt;= 100</p>
+<p>1 &lt;= array elements &lt;= 100000</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>Corresponding to each test case, print output in the new line.</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+3
+12 22 35
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>57
+</code></pre>
+</blockquote>
+
+<p>代码：</p>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int t = in.nextInt();
+        while (t-- &gt; 0) {
+            int n = in.nextInt();
+            int[] a = new int[n];
+            for (int i = 0; i &lt; n; i++) a[i] = in.nextInt();
+            System.out.println(solve(a));
+        }
+    }
+
+    private static int solve(int[] a) {
+        int[] dp = new int[(1&lt;&lt;10)];
+        for (int x : a) {
+            for (int bits = dp.length-1; bits &gt;= 0; bits--) {
+                int mask = getMask(x);
+                if ((bits &amp; mask) == mask) {
+                    dp[bits] = Math.max(dp[bits], dp[bits^mask] + x);
+                }
+            }
+        }
+
+        int res = 0;
+        for (int s : dp) {
+            res = Math.max(res, s);
+        }
+        return res;
+    }
+
+    private static int getMask(int x) {
+        int res = 0;
+        while (x &gt; 0) {
+            int d = x % 10;
+            res |= (1 &lt;&lt; d);
+            x /= 10;
+        }
+        return res;
+    }
+}
+
+</code></pre>
+
+							</section>
+							<section id="six" class="main">
+								
+								<h3>7.矩阵计算</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Let&#39;s define a Series Whose recurrence formula is as follows :</p>
+<p>C(n)= 3C(i-1) + 4C(i-2) + 5C(i-3) + 6C(i-4)</p>
+<p>C(0)= 2</p>
+<p>C(1)= 0</p>
+<p>C(2)= 1</p>
+<p>C(3)= 7</p>
+<p>Now based on this Series a Matrix Mi,j of size nn is to be formed.The top  left cell is(1,1) and the bottom right corner is (n,n). Each cell (i,j)  of the Matrix contains either 1 or 0. If C( (i*j)^3 ) is odd, Mi,j is 1, otherwise, it&#39;s 0.Count the total number of ones in the Matrix.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>First Line Of the input will contain an integer &#39;T&#39;- the number of test cases . Each of the next &#39;T&#39; lines consists of an integer &#39;n&#39;.-denoting the  size of the matrix. </p>
+<p>Constraints : </p>
+<p>1 ≤ T ≤ 1000</p>
+<p>1 ≤ n ≤ 1000</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>For each test case, output a single Integer -the taste value fo the dish of size-n*n. </p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+2
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>0
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.*;
+public class Main {
+
+	 
+    
+		public static void main (String[] args) {
+			//code
+			Scanner scanner=new Scanner(System.in);
+			int t=scanner.nextInt();
+			while(t--&gt;0)
+			{
+			    int n=scanner.nextInt();
+			     int count=0;
+			    for(int i=1;i&lt;=n;i++)
+			    {
+			        for(int j=1;j&lt;=n;j++)
+			        {
+			            
+			            int temp=(i*j)%7;
+			            temp=(temp*temp*temp)%7;
+			            
+			            if(temp==2||temp==3||temp==4||temp==6||temp==0)
+			            count++;
+			            
+			            
+			        }
+			    }
+			    System.out.println(count);
+			    
+			}
+		}
+}
+
+</code></pre>
+							</section>
+		<section id="seven" class="main">					
+
+<h3>8.最小化初始点</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>Given a grid with each cell consisting of positive, negative or no points  i.e, zero points. We can move across a cell only if we have positive  points ( &gt; 0 ). Whenever we pass through a cell, points in that cell  are added to our overall points. We need to find minimum initial points  to reach cell (m-1, n-1) from (0, 0) by following these certain set of  rules :</p>
+<p>1.From a cell (i, j) we can move to (i+1, j) or (i, j+1).</p>
+<p>2.We cannot move from (i, j) if your overall points at (i, j) is &lt;= 0.</p>
+<p>3.We have to reach at (n-1, m-1) with minimum positive points i.e., &gt; 0.</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>The first line contains an integer &#39;T&#39; denoting the total number of test  cases.In each test cases, the first line contains two integer &#39;R&#39; and  &#39;C&#39; denoting the number of rows and column of array.
+The second line contains the value of the array i.e the grid, in a single line separated by spaces in row major order.</p>
+<p>Constraints:</p>
+<p>1 ≤ T ≤ 30</p>
+<p>1 ≤ R,C ≤ 10</p>
+<p>-30 ≤ A[R][C] ≤ 30</p>
+<p>Input: points[m][n] = { {-2, -3,   3},
+                   {-5, -10,  1},
+                   {10,  30, -5}
+                 };</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>Print the minimum initial points to reach the bottom right most cell in a separate line.</p>
+<p>7</p>
+<p>Explanation:
+7 is the minimum value to reach destination with
+positive throughout the path. Below is the path.</p>
+<p>(0,0) -&gt; (0,1) -&gt; (0,2) -&gt; (1, 2) -&gt; (2, 2)</p>
+<p>We start from (0, 0) with 7, we reach(0, 1)
+with 5, (0, 2) with 2, (1, 2) with 5, (2, 2)with and finally we have 1 point (we needed
+greater than 0 points at the end).</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+3 3
+-2 -3 3 -5 -10 1 10 30 -5
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>7
+</code></pre>
+</blockquote>
+<pre><code>import java.util.*;
+public class Main {
+
+		public static void main (String[] args) {
+			//code
+			Scanner sc=new Scanner(System.in);
+			int t=Integer.valueOf(sc.nextLine());
+			while(t--&gt;0)
+			{
+			    String[] bound = sc.nextLine().split(&quot;\\s+&quot;);
+			    
+			    int m = Integer.valueOf(bound[0]);
+			    int n = Integer.valueOf(bound[1]);
+			    
+			    String[] value = sc.nextLine().split(&quot;\\s+&quot;);
+			    
+			    int[][] arr = new int[m][n];
+			    
+			    int pointer = 0;
+			    for(int i=0;i&lt;m;i++) {
+			    	for(int j=0;j&lt;n;j++) {
+			    		arr[i][j] = Integer.valueOf(value[pointer]);
+			    		pointer++;
+			    	}
+			    }
+			  getC(arr,m,n);  
+			    
+			}
+		}
+		
+		
+		public static void getC(int[][] cell,int m,int n) {
+			
+			int[][] dp = new int[m][n];
+			
+			dp[m-1][n-1] = cell[m-1][n-1]&gt;0?1:Math.abs(cell[m-1][n-1])+1;
+			
+			for(int i=m-2;i&gt;=0;i--)
+				dp[i][n-1] = Math.max(1, dp[i+1][n-1]-cell[i][n-1]);
+			for(int j=n-2;j&gt;=0;j--)
+				dp[m-1][j] = Math.max(1, dp[m-1][j+1]-cell[m-1][j]);
+			
+			
+			for(int i=m-2;i&gt;=0;i--) {
+				for(int j=n-2;j&gt;=0;j--) {
+					int min = Math.min(dp[i+1][j], dp[i][j+1]);
+					
+					dp[i][j] = Math.max(min-cell[i][j], 1);
+				}
+			}
+			
+			System.out.println(dp[0][0]);
+		}
+}
+
+</code></pre>
+							</section>
+<section id="eight" class="main">
+
+							
+<h3>9. 书本分发</h3>
+<blockquote><p>Description</p>
+<p>You are given N number of books. Every ith book has Pi number of pages. You have to allocate books to M number of students. There can be many ways or permutations to do so. In each permutation one of the M students will be allocated the maximum number of pages. Out of all these permutations, the task is to find that particular permutation in which the maximum number of pages allocated to a student is minimum of those in all the other permutations, and print this minimum value. Each book will be allocated to exactly one student. Each student has to be allocated atleast one book.</p>
+<p>Input</p>
+<p>The first line contains &#39;T&#39; denoting the number of testcases. Then follows description of T testcases:Each case begins with a single positive integer N denoting the number of books.The second line contains N space separated positive integers denoting the pages of each book.And the third line contains another integer M, denoting the number of studentsConstraints:1&lt;= T &lt;=70，1&lt;= N &lt;=50，1&lt;= A [ i ] &lt;=250，1&lt;= M &lt;=50，Note: Return -1 if a valid assignment is not possible, and allotment should be in contiguous order (see explanation for better understanding)</p>
+<p>Output</p>
+<p>For each test case, output a single line containing minimum number of pages each student has to read for corresponding test case</p>
+<p>Sample Input 1</p>
+<p>1
+    4
+    12 34 67 90
+    2</p>
+<p>Sample Output 1</p>
+<p>113</p>
+</blockquote>
+
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total  = sc.nextInt();
+		
+		while(total&gt;0) {
+			
+			int num = sc.nextInt();
+			
+			int[] book = new int[num];
+			
+			for(int i=0;i&lt;num;i++)
+				book[i] = sc.nextInt();
+			
+			int student = sc.nextInt();
+			
+			
+			int readPage = getResult(book,student);
+			
+			System.out.println(readPage);
+			
+			
+			
+			total--;
+		}
+
+	}
+	
+	
+	public static int getResult(int[] book,int student) {
+		
+		int pages = 0;
+		
+		
+		//计算前几项和的数组
+		
+		int[] sub = new int[book.length+1];
+		
+		for(int i=0;i&lt;book.length;i++)
+			sub[i+1] = sub[i]+book[i];
+		
+		//动态规划矩阵
+		int[][] f = new int[book.length+1][student+1];
+		//矩阵初始化
+		for(int i=0;i&lt;book.length+1;i++)
+			for(int j=0;j&lt;student+1;j++)
+				f[i][j] = Integer.MAX_VALUE;
+
+		f[0][0] = 0;
+		
+		//矩阵数据填充
+		for(int i=1;i&lt;book.length+1;i++) {
+			for(int j=1;j&lt;student+1;j++) {
+				for(int k=0;k&lt;i;k++) {
+					f[i][j] = Math.min(f[i][j], Math.max(f[k][j-1], sub[i]-sub[k]));
+				}
+			}
+		}
+		
+		//矩阵最后一个数就是答案
+		pages = f[book.length][student];
+		return pages;
+	}
+
+}
+
+</code></pre>
+
+						
+							
+
+							</section>
+							<section id="nine" class="main">
+<h3>10. 漆狗屋 </h3>
+<blockquote><p>Description</p>
+<p>Dilpreet wants to paint his dog- Buzo&#39;s home that has n boards with different lengths[A1, A2,..., An]. He hired k painters for this work and each painter takes 1 unit time to paint 1 unit of the board.The problem is to find the minimum time to get this job done under the constraints that any painter will only paint continuous sections of boards, say board {2, 3, 4} or only board {1} or nothing but not board {2, 4, 5}.</p>
+<p>Constraints:1&lt;=T&lt;=100,1&lt;=k&lt;=30,1&lt;=n&lt;=50,1&lt;=A[i]&lt;=500</p>
+<p>Input</p>
+<p>The first line consists of a single integer T, the number of test cases. For each test case, the first line contains an integer k denoting the number of painters and integer n denoting the number of boards. Next line contains n- space separated integers denoting the size of boards.</p>
+<p>Output</p>
+<p>For each test case, the output is an integer displaying the minimum time for painting that house.</p>
+<p>Sample Input 1</p>
+<p>2
+    2 4
+    10 10 10 10
+    2 4
+    10 20 30 40</p>
+<p>Sample Output 1</p>
+<p>20
+    60</p>
+</blockquote>
+
+<p>代码：</p>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		
+		while(total&gt;0) {
+			
+			
+			int painter  = sc.nextInt();
+			
+			int board = sc.nextInt();
+			
+			int[] arr = new int[board];
+			
+			for(int i=0;i&lt;board;i++)
+				arr[i] = sc.nextInt();
+			
+			getPainted(arr,board,painter);
+			
+			total--;
+		
+		}
+		
+		
+
+	}
+	
+	
+	public static void getPainted(int[] arr,int board,int painter) {
+		
+		int[][] dp = new int[painter+1][board+1];
+		
+		for(int i=1;i&lt;=board;i++) {
+			dp[1][i] = sum(arr,0,i-1);
+		}
+		
+		for(int i=1;i&lt;=painter;i++)
+			dp[i][1] = arr[0];
+		
+		for(int i=2;i&lt;=painter;i++) {
+			for(int j=2;j&lt;=board;j++) {
+				
+				int value = Integer.MAX_VALUE;
+				
+				for(int p=1;p&lt;=j;p++) {
+					value = Math.min(value, Math.max(dp[i-1][p], sum(arr,p,j-1)));
+				}
+				dp[i][j] = value;
+			}
+		}
+		
+		System.out.println(dp[painter][board]);
+	}
+	
+	public static int sum(int[] arr,int from,int to) {
+		
+		int total = 0;
+		
+		for(int i=from;i&lt;=to;i++) {
+			total+=arr[i];
+		}
+		return total;
+	}
+
+}
+
+</code></pre>
+
+							</section>
+							<section id="ten" class="main">
+
+<h3>11.棋盘覆盖问题</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>棋盘覆盖问题：给定一个大小为2^n2^n个小方格的棋盘，其中有一个位置已经被填充，现在要用一个L型（22个小方格组成的大方格中去掉其中一个小方格）形状去覆盖剩下的小方格。求出覆盖方案，即哪些坐标下的小方格使用同一个L型格子覆盖。注意：坐标从0开始。左上方的第一个格子坐标为(0,0)，第一行第二个坐标为(0,1)，第二行第一个为(1,0)，以此类推。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为测试用例个数，后面每一个用例有两行，第一行为n值和特殊的格子的坐标（用空格隔开），第二行为需要查找其属于同一个L型格子的格子坐标。</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>输出每一行为一个用例的解，先按照行值从小到大、再按照列值从小到大的顺序输出每一个用例的两个坐标；用逗号隔开。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+1 1 1
+0 0
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>0 1,1 0
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>//棋盘覆盖
+import java.util.Arrays;
+import java.util.Scanner;
+
+/**
+ * @author Cai2yy
+ * @date 2019/11/22 21:51
+ */
+
+public class Main {
+
+    static int[][] L_Matrix = new int[][] {
+            new int[]{1,1,-1,-1},
+            new int[]{1,0,-1,-1},
+            new int[]{2,0,0,3},
+            new int[]{2,2,3,3}};
+
+    static int[][] direction = new int[][] {new int[]{0, 1},
+            new int[]{-1, 0}, new int[]{0, -1}, new int[]{1, 0}};
+            //下，左，上，右
+
+    public static int[] nearRange(int n, int pX, int pY, int tX, int tY) {
+        int d = (int)Math.pow(2, n - 1);
+        //System.out.println(&quot;~~&quot;+d+&quot;,&quot;+pX +&quot;,&quot; + pY +&quot;,&quot;+tX+&quot;,&quot;+tY);
+        if (pX / d == tX / d &amp;&amp; pY / d == tY / d) {
+            //System.out.println(&quot;缩小&quot;);
+            int boardX = pX / d * d;
+            int boardY = pY / d * d;
+            return nearRange(n - 1, pX - boardX, pY - boardY, tX - boardX, tY - boardY);
+        }
+        else {
+            return getResult(n, pX, pY, tX, tY);
+        }
+    }
+
+    public static int[] getResult(int n, int px, int py, int targetX, int targetY) {
+        /** 先找到空点的位置，确定整体布局 */
+        //System.out.println(&quot;原x:&quot; + targetX + &quot;原y: &quot; + targetY);
+        int xx = px / (int)Math.pow(2, n - 1);
+        int yy = py / (int)Math.pow(2, n - 1);
+        int degree = 0;
+        int[] position = new int[2];
+        int newX = targetX;
+        int newY = targetY;
+        if (xx == 0 &amp;&amp; yy == 1) {
+            degree = 180;
+            newX = (int) Math.pow(2, n) - 1 - targetX;
+            newY = (int) Math.pow(2, n) - 1 - targetY;
+        } else if (xx == 0 &amp;&amp; yy == 0) {
+            degree = 270;
+            newX = (int) Math.pow(2, n) - 1 - targetY;
+            newY = targetX;
+        } else if (xx == 1 &amp;&amp; yy == 1) {
+            degree = 90;
+            newX = targetY;
+            newY = (int) Math.pow(2, n) - 1 - targetX;
+        }
+        //System.out.println(&quot;初始化，角度: &quot; + degree);
+        //System.out.println(&quot;newX&quot; + newX + &quot;, newY:&quot; + newY);
+        /** 获取新位置 */
+        position = getPosition(n, newX, newY, degree);
+        int[] p1 = new int[2];
+        int[] p2 = new int[2];
+        int degreeInv = position[1] / 90;
+        if (position[0] == 0) {
+            // p1-下， p2-下右
+            p1[0] = direction[0 + degreeInv][0];
+            p1[1] = direction[0 + degreeInv][1];
+            p2[0] = p1[0] + direction[(3 + degreeInv) % 4][0];
+            p2[1] = p1[1] + direction[(3 + degreeInv) % 4][1];
+        }
+        else if (position[0] == 1) {
+            // p1-上, p2-右
+            p1[0] = direction[(2 + degreeInv) % 4][0];
+            p1[1] = direction[(2 + degreeInv) % 4][1];
+            p2[0] = direction[(3 + degreeInv) % 4][0];
+            p2[1] = direction[(3 + degreeInv) % 4][1];
+
+        } else if (position[0] == 2) {
+            // p1-左, p2-左上
+            p1[0] = direction[(1 + degreeInv) % 4][0];
+            p1[1] = direction[(1 + degreeInv) % 4][1];
+            p2[0] = p1[0] + direction[(2 + degreeInv) % 4][0];
+            p2[1] = p1[1] + direction[(2 + degreeInv) % 4][1];
+        }
+        //System.out.println(&quot;最终结果：position: &quot; + position[0] + &quot;, degree:&quot; + degree);
+        //System.out.println(&quot;p1: &quot; + Arrays.toString(p1));
+        //System.out.println(&quot;p2: &quot; + Arrays.toString(p2));
+        int[] result = new int[4];
+        if (p1[0] &lt; p2[0] || (p1[0] == p2[0] &amp;&amp; p1[1] &lt; p2[1])) {
+            result[0] = p1[0];
+            result[1] = p1[1];
+            result[2] = p2[0];
+            result[3] = p2[1];
+        }
+        else {
+            result[0] = p2[0];
+            result[1] = p2[1];
+            result[2] = p1[0];
+            result[3] = p1[1];
+        }
+        return result;
+    }
+
+    /** 规定为L形，左下角坐标为0,0，坐标重调为相对坐标 */
+    public static int[] getPosition(int n, int x, int y, int degree) {
+        /** 递归终止条件，输出相对位置和旋转角度
+         *  位置：0-左上, 1-左下, 2-右下 (右上空白)
+         */
+        //System.out.println(&quot;n: &quot; + n + &quot;, x: &quot; + x + &quot;, y: &quot; + y);
+        if (n == 1) {
+            int[] result = new int[2];
+            result[1] = degree;
+            if (x == 0 &amp;&amp; y == 0)
+                result[0] = 0;
+            else if (x == 0 &amp;&amp; y == 1)
+                result[0] = 1;
+            else if (x == 1 &amp;&amp; y == 1)
+                result[0] = 2;
+            return result;
+        }
+        /** 递归主体 */
+        int d = (int)Math.pow(2, n - 2);
+        int xx = x / d;
+        int yy = y / d;
+        //System.out.println(&quot;xx:&quot; + xx + &quot;, yy:&quot; + yy);
+        int No_L = L_Matrix[yy][xx];
+        //System.out.println(&quot;No_L: &quot; + No_L);
+        if (No_L == 0) {
+            xx = x - d;
+            yy = y - d;
+        } else if (No_L == 1) {
+            xx = y;
+            yy = 2 * d - 1 - x;
+            degree = (degree + 90) % 360;
+        } else if (No_L == 2) {
+            xx = x;
+            yy = y - 2 * d;
+        } else if (No_L == 3) {
+            xx = 4 * d - 1 - y;
+            yy = x - 2 * d;
+            degree = (degree - 90) % 360;
+        }
+        return getPosition(n - 1, xx, yy, degree);
+
+    }
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int rounds = Integer.valueOf(scan.nextLine());
+        for (int i = 0; i &lt; rounds; i++) {
+            String line = scan.nextLine();
+            String[] arr = line.split(&quot; &quot;);
+            int n = Integer.valueOf(arr[0]);
+            int pX = Integer.valueOf(arr[1]);
+            int pY = Integer.valueOf(arr[2]);
+            line = scan.nextLine();
+            arr = line.split(&quot; &quot;);
+            int tX = Integer.valueOf(arr[0]);
+            int tY = Integer.valueOf(arr[1]);
+            int[] result = nearRange(n,pX,pY,tX,tY);
+            System.out.println((tX+result[0]) + &quot; &quot; + (tY+result[1]) + &quot;,&quot; + (tX+result[2]) + &quot; &quot; + (tY+result[3]));
+
+        }
+    }
+
+}
+</code></pre>
+							</section>
+
+							<section id="eleven" class="main">
+<h3>12.最长公共子序列</h3>
+<blockquote><p>Description</p>
+<p>&nbsp;</p>
+<p>给定两个字符串，返回两个字符串的最长公共子序列（不是最长公共子字符串），可能是多个。</p>
+<p>&nbsp;</p>
+<p>Input</p>
+<p>&nbsp;</p>
+<p>输入第一行为用例个数， 每个测试用例输入为两行，一行一个字符串</p>
+<p>&nbsp;</p>
+<p>Output</p>
+<p>&nbsp;</p>
+<p>如果没有公共子序列，不输出，如果有多个则分为多行，按字典序排序。</p>
+<p>&nbsp;</p>
+<p>Sample Input 1                </p>
+<pre><code>1
+1A2BD3G4H56JK
+23EFG4I5J6K7
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>23G456K
+23G45JK
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.*;
+import java.lang.*;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// code
+		Scanner sc = new Scanner(System.in);
+		int t = Integer.valueOf(sc.nextLine());
+		while (t-- &gt; 0) {
+			String a = sc.nextLine();
+			String b = sc.nextLine();
+
+			getWay(a, b);
+		}
+	}
+
+	/*
+	 * 从最后一个节点开始,观察dp数组,首先明确 满足dp[i - 1][j] == dp[i][j - 1] =
+	 * dp[i][j]-1的格子才是要输出的字符,因为这个字符一定是两个数组中的相同字符. 如: 5 4 5 6 4 5
+	 * 
+	 * 若 dp[i - 1][j] == dp[i][j - 1] == dp[i][j]: 如: 6 6 6 则向左和向上同时递归
+	 * 
+	 * 若 dp[i - 1][j] &gt; dp[i][j - 1] 如 6 5 6 则向上递归
+	 * 
+	 * 若 dp[i][j - 1] &gt; dp[i][j] 如 5 6 6 则向左递归
+	 * 
+	 * 若dp[i - 1][j] == dp[i][j - 1] != dp[i][j]: 如: 5 5 5 6 此时满足条件,记录字符串,并则向斜上方递归
+	 */
+	
+	public static ArrayList&lt;Integer&gt; aSame = new ArrayList&lt;Integer&gt;();
+	public static ArrayList&lt;Integer&gt; lengthRe = new ArrayList&lt;Integer&gt;();
+
+	public static void backTrac(List&lt;String&gt; list,int[][] dp, int starti, int startj,String item,String a) {
+
+	        int i = starti;
+			int j = startj;
+			
+			if(dp[i][j]==0) {
+				
+				if(list.indexOf(item)==-1)
+					list.add(item);
+				
+				return;
+			}
+				
+			
+				if(dp[i-1][j]==dp[i][j-1]&amp;&amp;dp[i][j-1]==dp[i][j]) {
+					backTrac(list,dp,i,j-1,item,a);
+					backTrac(list,dp,i-1,j,item,a);
+				}else if(dp[i-1][j]&gt;dp[i][j-1]) {
+					backTrac(list,dp,i-1,j,item,a);
+				}else if(dp[i][j-1]&gt;dp[i-1][j]) {
+					backTrac(list,dp,i,j-1,item,a);
+				}else if(dp[i-1][j]==dp[i][j-1]&amp;&amp;dp[i][j-1]!=dp[i][j]) {
+					String tmpStr = a.charAt(j-1)+item;
+					
+					backTrac(list,dp,i-1,j-1,tmpStr,a);
+					
+					
+				}
+	}
+
+	public static void getWay(String a, String b) {
+
+		int row = b.length() + 1;
+		int col = a.length() + 1;
+
+		int[][] dp = new int[row][col];
+
+		for (int i = 1; i &lt; row; i++) {
+			for (int j = 1; j &lt; col; j++) {
+				if (a.charAt(j - 1) == b.charAt(i - 1)) {
+					dp[i][j] = dp[i - 1][j - 1] + 1;
+				} else
+					dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+			}
+		}
+
+		int maxLength = dp[row-1][col-1];
+		String item = &quot;&quot;;
+		List&lt;String&gt; list = new ArrayList&lt;String&gt;();
+		   backTrac(list,dp, row-1, col-1,item,a);
+		   
+		   Collections.sort(list);
+		   
+		   for(int i=0;i&lt;list.size();i++)
+			   System.out.println(list.get(i));
+
+	}
+}
+
+</code></pre>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Say Something</h2>
+							<p>Just keep going on~~~<br/>
+							Optimism is the essential part of life<br/>
+							Whatever it happens in life 
+							it will be ok<br/>
+							There is nothing important except life<br/>
+							Alive with love <br/>
+						You can make it</p>
+							
+						</section>
+						<section>
+							<h2>Contact</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>NanJing University,HanKou Roud NO.22</dd>
+								<dt>Phone</dt>
+								<dd>188****8500</dd>
+								<dt>Email</dt>
+								<dd><a href="#">gjcbetty@163.com</a></dd>
+							</dl>
+							
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

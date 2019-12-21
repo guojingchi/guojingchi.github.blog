@@ -1,0 +1,953 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>nju_Array</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>Array</h1>
+						<p>数组相关算法整理</p>
+					</header>
+
+
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active">子数组的取值范围</a></li>
+							<li><a href="#first">子矩阵问题</a></li>
+							<li><a href="#second">数组和窗口</a></li>
+							<li><a href="#third">汉诺塔</a></li>
+							<li><a href="#four">区间第k最小</a></li>
+							<li><a href="#five">固定和的元素对</a></li>
+							<li><a href="#six">先升后降</a></li>
+                            <li><a href="#seven">调整数组使差最小</a></li>
+                           
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="intro" class="main">
+<h3>1. 子数组的取值范围</h3>
+<blockquote><p>Description</p>
+<p>给定数组arr和整数num，求arr的连续子数组中满足：其最大值减去最小值的结果大于num的个数。请实现一个时间复杂度为O(length(arr))的算法。</p>
+<p>Input</p>
+<p>输入第一行为测试用例个数。每一个用例有若干行，第一行为数组，每一个数用空格隔开，第二行为num。</p>
+<p>Output</p>
+<p>输出一个值。</p>
+<p>Sample Input 1</p>
+<p>1
+3 6 4 3 2
+2</p>
+<p>Sample Output 1</p>
+<p>6</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.LinkedList;
+import java.util.Scanner;
+
+public class Main {
+
+	  public static int getNum(int[] arr, int num){
+		  if(arr==null || arr.length == 0){
+			  return 0;
+		  }
+		  LinkedList&lt;Integer&gt; qmin = new LinkedList&lt;Integer&gt;();
+		  LinkedList&lt;Integer&gt; qmax = new LinkedList&lt;Integer&gt;();
+		  int i = 0;
+		  int j = 0;
+		  int res = 0;
+		 
+		  while(i&lt;arr.length)
+		  {
+			  while(j&lt;arr.length){
+			  while(!qmin.isEmpty() &amp;&amp; arr[qmin.peekLast()]&gt;=arr[j]){
+				   qmin.pollLast();
+			  }
+			  qmin.addLast(j);
+			  
+			  while(!qmax.isEmpty() &amp;&amp; arr[qmax.peekLast()]&lt;=arr[j]){
+				  qmax.pollLast();
+			  }
+			  
+			  qmax.addLast(j);
+			 
+			  if(arr[qmax.getFirst()]-arr[qmin.getFirst()]&gt;num){
+				  break;
+			  }
+			  j++;
+			  
+		  }
+		  if(qmin.peekFirst()==i){
+			  qmin.pollFirst();
+		  }
+		  if(qmax.peekFirst()==i){
+			  qmax.pollFirst();
+		  }
+		  
+		  res += arr.length-j;
+		  i++;
+		  }
+		 // System.out.println(count);
+		  return res;
+	  }
+	  
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	Scanner sc = new Scanner(System.in);
+	
+	int total = Integer.parseInt(sc.nextLine());
+	while(total&gt;0) {
+		
+		String arrString = sc.nextLine();
+		
+		int num = Integer.parseInt(sc.nextLine());
+		
+		String[] arrValue = arrString.split(&quot;\\s+&quot;);
+		
+		int[] arr = new int[arrValue.length];
+		
+		for(int i=0;i&lt;arr.length;i++)
+			arr[i] = Integer.parseInt(arrValue[i]);
+		
+		int result =0;
+		
+		
+		
+		result = getNum(arr,num);
+		System.out.println(result);
+		
+		
+		total--;
+	}
+		
+	}
+
+}
+</code></pre>
+							</section>
+							<section id="first" class="main">
+
+<h3>2.子矩阵问题</h3>
+<blockquote><p>Description</p>
+<p>给定一个矩形区域，每一个位置上都是1或0，求该矩阵中每一个位置上都是1的最大子矩形区域中的1的个数。</p>
+<p>Input</p>
+<p>输入第一行为测试用例个数。每一个用例有若干行，第一行为矩阵行数n和列数m，下面的n行每一行是用空格隔开的0或1。</p>
+<p>Output</p>
+<p>输出一个数值。</p>
+<p>Sample Input 1</p>
+<p>1
+3 4
+1 0 1 1
+1 1 1 1
+1 1 1 0</p>
+<p>Sample Output 1</p>
+<p>6</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		
+		while(total&gt;0) {
+			int m = sc.nextInt();
+			int n  = sc.nextInt();
+			
+			int[][] arr = new int[m][n];
+			
+			for(int i=0;i&lt;m;i++) {
+				for(int j=0;j&lt;n;j++) {
+					arr[i][j] = sc.nextInt();
+				}
+			}
+			
+			int result = 0;
+			
+			result = calculate(arr,m,n);
+			
+			System.out.println(result);
+			
+			
+			
+			total--;
+		}
+
+	}
+
+	public static int calculate(int[][] arr,int m,int n) {
+		int count = 0;
+		//最大值
+		int max = 0;
+		//遍历所有矩阵中的数
+		for(int i=0;i&lt;m;i++) {
+			for(int j=0;j&lt;n;j++) {
+				//对于每一个数
+				//宽度
+				int w=0;
+				
+				//长度
+				int l=0;
+				//对于每一个数，进行循环找横向最大
+				for(int q=j;q&lt;n;q++) {
+					if(arr[i][q]==1)
+						w++;
+					else
+						break;
+				}
+				
+				if(w&gt;max)
+				  max = w;
+				
+				//对于每一个数，纵向找
+				for(int e=i;e&lt;m;e++) {
+					if(arr[e][j]==1)
+						l++;
+					else
+						break;
+				}
+				
+				if(l&gt;max)
+					max=l;
+				
+				//对于每一个数，方形扩展
+				int rl = 0;
+				int minW = n;
+				for(int r=i;r&lt;m;r++) {
+					rl++;
+					if(arr[r][j]==0)
+						break;
+					
+					
+					int realW = 0;
+					
+					for(int t=j;t&lt;n;t++) {
+					     if(arr[r][t]==1)
+					    	 realW++;
+					     else
+					    	 break;
+					}
+					
+					if(realW&lt;minW)
+						minW = realW;
+					
+					if(max&lt;minW*rl)
+						max = minW*rl;
+				}
+				
+				
+			}
+		}
+		
+		
+		
+		count = max;
+		
+		
+		return count;
+	}
+	
+	
+}
+</code></pre>
+							</section>
+							<section id="second" class="main">
+<h3>3. 数组和窗口</h3>
+<blockquote><p>Description</p>
+<p>给定一个整型数组arr和一个大小为w的窗口，窗口从数组最左边滑动到最右边，每次向右滑动一个位置，求出每一次滑动时窗口内最大元素的和。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入的第一行为数组，每一个元素使用空格隔开；第二行为窗口大小。</p>
+<p>Output</p>
+<p>输出每个测试用例结果。</p>
+<p>Sample Input 1</p>
+<p>1
+4 3 5 4 3 3 6 7
+3</p>
+<p>Sample Output 1</p>
+<p>32</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		arrWindow();
+	}
+	
+	public static void arrWindow() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+		String arrayString = sc.nextLine();
+		
+		
+		int w = Integer.parseInt(sc.nextLine());
+		
+		String[] strArr = arrayString.split(&quot;\\s+&quot;);
+		
+		int[] arr = new int[strArr.length];
+		
+		for(int i=0;i&lt;arr.length;i++)
+			arr[i] = Integer.parseInt(strArr[i]);
+		
+		if(w==0)
+			System.out.println(0);
+		else {
+			int count = 0;
+		for(int i=w-1;i&lt;arr.length;i++) {
+			int max = arr[i];
+			int k=w;
+			
+			while(k&gt;0) {
+				if(arr[i-k+1]&gt;=max)
+					max = arr[i-k+1];
+				k--;
+			}
+			count+=max;
+		}
+		
+		System.out.println(count);
+		}
+          total--;
+		}
+	}
+
+
+}
+</code></pre>
+
+							</section>
+							<section id="third" class="main">
+<h3>4.汉诺塔**</h3>
+<blockquote><p>Description</p>
+<p>汉诺塔问题中限制不能将一层塔直接从最左侧移动到最右侧，也不能直接从最右侧移动到最左侧，而是必须经过中间。求当有N层塔的时候移动步数。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入的第一行为N。</p>
+<p>Output</p>
+<p>移动步数。</p>
+<p>Sample Input 1</p>
+<p>1
+2</p>
+<p>Sample Output 1</p>
+<p>8</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+
+	public static int hanoiProblem1(int num, String left, String mid,
+			String right) {
+		if (num &lt; 1) {
+			return 0;
+		}
+		return process(num, left, mid, right, left, right);
+	}
+ 
+	public static int process(int num, String left, String mid, String right,
+			String from, String to) {
+		if (num == 1) {
+			if (from.equals(mid) || to.equals(mid)) {
+				
+				return 1;
+			} else {
+				
+				return 2;
+			}
+		}
+		if (from.equals(mid) || to.equals(mid)) {
+			String another = (from.equals(left) || to.equals(left)) ? right : left;
+			int part1 = process(num - 1, left, mid, right, from, another);
+			int part2 = 1;
+			
+			int part3 = process(num - 1, left, mid, right, another, to);
+			return part1 + part2 + part3;
+		} else {
+			int part1 = process(num - 1, left, mid, right, from, to);
+			int part2 = 1;
+			
+			int part3 = process(num - 1, left, mid, right, to, from);
+			int part4 = 1;
+			
+			int part5 = process(num - 1, left, mid, right, from, to);
+			return part1 + part2 + part3 + part4 + part5;
+		}
+	}
+
+	public static void main(String[] args) {
+		
+ 
+		Scanner sc = new Scanner(System.in);
+		int total = sc.nextInt();
+		while(total&gt;0) {
+			
+			int num = sc.nextInt();
+			
+		
+			int steps1 = hanoiProblem1(num, &quot;left&quot;, &quot;mid&quot;, &quot;right&quot;);
+
+
+			System.out.println(steps1);
+		
+			total--;
+		}
+		
+ 
+	}
+ 
+}
+</code></pre>
+							</section>
+							<section id="four" class="main">
+<h3>5. 区间第k最小</h3>
+<blockquote><p>Description</p>
+<p>找到给定数组的给定区间内的第K小的数值。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入的第一行为数组，每一个数用空格隔开；第二行是区间（第几个数到第几个数，两头均包含），两个值用空格隔开；第三行为K值。</p>
+<p>Output</p>
+<p>结果。</p>
+<p>Sample Input 1</p>
+<p>1
+1 2 3 4 5 6 7
+3 5
+2</p>
+<p>Sample Output 1</p>
+<p>4</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+		public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			String arrString = sc.nextLine();
+		
+			String rangeString = sc.nextLine();
+			
+			int kValue = Integer.parseInt(sc.nextLine());
+			
+			String[] arrValue = arrString.split(&quot;\\s+&quot;);
+			
+			String[] rangeValue = rangeString.split(&quot;\\s+&quot;);
+			
+			//读出数组值
+			int[] arr = new int[arrValue.length];
+			
+			for(int i=0;i&lt;arr.length;i++)
+				arr[i] = Integer.parseInt(arrValue[i]);
+			
+			int left = Integer.parseInt(rangeValue[0]);
+			
+			int right = Integer.parseInt(rangeValue[1]);
+			
+			int result = 0;
+			
+			result = kMin(arr,left,right,kValue);
+			
+			System.out.println(result);
+			
+			
+			
+			total--;
+		}
+		
+	}
+
+	
+	public static int kMin(int[] arr, int left,int right,int k) {
+		
+		int result=0;
+		
+		int arrLength = right-left+1;
+		
+		int[] rangeArr = new int[arrLength];
+		
+		int flag=0;
+		for(int i=left-1;i&lt;right;i++) {
+			rangeArr[flag] = arr[i];
+			flag++;
+		}
+		
+		
+		for(int i=0;i&lt;arrLength;i++) {
+			for(int j=i;j&lt;arrLength;j++) {
+				if(rangeArr[i]&gt;rangeArr[j]) {
+					int temp = rangeArr[i];
+					rangeArr[i] = rangeArr[j];
+					rangeArr[j] = temp;
+				}
+			}
+		}
+		
+		result = rangeArr[k-1];
+		
+		return result;
+	}
+
+}
+</code></pre>
+							</section>
+							<section id="five" class="main">
+<h3>6. 固定和的元素对</h3>
+<blockquote><p>Description</p>
+<p>输入一个数组和一个数字，在数组中查找两个数，使得它们的和正好是输入的那个数字，统计这样两个数的对数。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入第一行是数组，每一个数用空格隔开；第二行是数字和。</p>
+<p>Output</p>
+<p>输出这样两个数有几对。</p>
+<p>Sample Input 1</p>
+<p>1
+1 2 4 7 11 0 9 15
+11</p>
+<p>Sample Output 1</p>
+<p>3</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			String arrString = sc.nextLine();
+			
+			int num = Integer.parseInt(sc.nextLine());
+			
+			String[] arrValue = arrString.split(&quot;\\s+&quot;);
+			
+			int[] arr = new int[arrValue.length];
+			
+			for(int i=0;i&lt;arr.length;i++)
+				arr[i] = Integer.parseInt(arrValue[i]);
+			int result=0;
+			result = coupleCount(arr,num);
+			
+			System.out.println(result);
+			
+			
+			
+			total--;
+		}
+		
+	}
+	
+	public static int coupleCount(int[] arr,int num) {
+		
+		int count =0;
+		
+		for(int i=0;i&lt;arr.length;i++) {
+			for(int j=i;j&lt;arr.length;j++) {
+				if(arr[i]&gt;arr[j]) {
+				
+					int temp = arr[i];
+					arr[i] = arr[j];
+					arr[j] = temp;
+				}
+				
+			}
+		}
+		
+		
+		int left = 0;
+		int right = arr.length-1;
+		
+		while(right&gt;left) {
+			if(arr[right]+arr[left]&gt;num)
+				right--;
+			else if(arr[right]+arr[left]&lt;num)
+				left++;
+			else if(arr[right]+arr[left]==num) {
+				right--;
+				left++;
+				count++;
+			}
+		}
+		
+		
+		return count;
+		
+		
+	}
+
+}
+</code></pre>
+
+							</section>
+							<section id="six" class="main">
+<h3>7. 先升后降</h3>
+<blockquote><p>Description</p>
+<p>从一列不重复的数中筛除尽可能少的数使得从左往右看，这些数是从小到大再从大到小的。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入是一个数组，数值通过空格隔开。</p>
+<p>Output</p>
+<p>输出筛选之后的数组，用空格隔开。如果有多种结果，则一行一种结果， 单个输入的所有结果按从小到大排序，排序的key的优先级随index递增而递减 例如 3 4 7 6； 1 3 7 5； 1 2 7 6； 1 3 7 6 排序成 1 2 7 6；1 3 7 5；1 3 7 6； 3 4 7 6；</p>
+<p>Sample Input 1</p>
+<p>4
+1 2 4 7 11 10 9 15 3 5 8 6
+1 3 5 4 7 6 4 5 3
+1 2 3
+3 2 1</p>
+<p>Sample Output 1</p>
+<p>1 2 4 7 11 10 9 8 6
+1 3 4 7 6 4 3
+1 3 4 7 6 5 3
+1 3 5 7 6 4 3
+1 3 5 7 6 5 3
+1 2 3
+3 2 1</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        int rounds = scanner.nextInt();
+        scanner.nextLine();
+        for (int round = 0; round &lt; rounds; round++) {
+            String s = scanner.nextLine();
+            int[] ints;
+            if (s != null &amp;&amp; !s.equals(&quot;&quot;) &amp;&amp; !s.equals(&quot;null&quot;)) {
+                String[] valueArr = s.split(&quot; &quot;);
+                ints = new int[valueArr.length];
+                for (int i = 0; i &lt; valueArr.length; i++) {
+                    ints[i] = Integer.parseInt(valueArr[i]);
+                }
+                Main p7test = new Main();
+                int[] l2r = p7test.L2R(ints);
+                int[] r2l = p7test.R2L(ints);
+                int max = 0;
+                List&lt;Integer&gt; flag = new ArrayList&lt;&gt;();
+                List&lt;List&lt;Integer&gt;&gt; arr = new ArrayList&lt;&gt;();
+                for (int i = 0; i &lt; ints.length; i++) {
+                    if (l2r[i] + r2l[i] &gt; max) {
+                        max = l2r[i] + r2l[i] - 1;
+                    }
+                }
+                for (int i = 0; i &lt; ints.length; i++) {
+                    if (l2r[i] + r2l[i] - 1 == max) {
+                        flag.add(i);
+                    }
+                }
+                for (int i = 0; i &lt; flag.size(); i++) {
+                    List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+                    p7test.findPath(ints, l2r, r2l, flag.get(i), flag.get(i), list, arr);
+                }
+                for (int i = 0; i &lt; arr.size() - 1; i++) {
+                    for (int j = arr.size() - 1; j &gt; i; j--) {
+                        if (arr.get(j).equals(arr.get(i))) {
+                            arr.remove(j);
+                        }
+                    }
+                }
+                List&lt;String&gt; stringList = new ArrayList&lt;&gt;();
+                for (int i = 0; i &lt; arr.size(); i++) {
+                    String string = arr.get(i).toString();
+                    string = string.replaceAll(&quot;,&quot;, &quot;&quot;);
+                    string = string.substring(1, string.length() - 1);
+                    stringList.add(string);
+                }
+                Collections.sort(stringList);
+                for (String a : stringList) {
+                    System.out.println(a);
+                }
+            }
+        }
+    }
+public void findPath(int[] ints, int[] l2r, int[] r2l, int temp, int flag, List&lt;
+            Integer&gt; list, List&lt;List&lt;Integer&gt;&gt; arr) throws IOException, ClassNotFoundException {
+        list.add(ints[flag]);
+        if (l2r[flag] == 1) {
+            list.remove(0);
+            Collections.reverse(list);
+            findR2LPath(ints, r2l, temp, list, arr);
+            return;
+        }
+        for (int i = flag - 1; i &gt; -1; i--) {
+            if (ints[i] &lt; ints[flag] &amp;&amp; l2r[i] == l2r[flag] - 1) {
+                List list1 = deepCopy(list);
+                findPath(ints, l2r, r2l, temp, i, list1, arr);
+            }
+        }
+    }
+
+    public void findR2LPath(int[] ints, int[] r2l, int flag, List&lt;Integer&gt; list, List&lt;List&lt;Integer&gt;&gt; arr) throws
+            IOException, ClassNotFoundException {
+        list.add(ints[flag]);
+        if (r2l[flag] == 1) {
+            arr.add(list);
+            return;
+        }
+        for (int i = flag + 1; i &lt; ints.length; i++) {
+            if (ints[i] &lt; ints[flag] &amp;&amp; r2l[i] == r2l[flag] - 1) {
+                List list1 = deepCopy(list);
+                findR2LPath(ints, r2l, i, list1, arr);
+            }
+        }
+    }
+
+
+    public int[] L2R(int[] ints) {
+        int len = ints.length;
+        int[] l2r = new int[len];
+        l2r[0] = 1;
+        for (int i = 1; i &lt; len; i++) {
+            l2r[i] = 1;
+            for (int j = i - 1; j &gt; -1; j--) {
+                if (ints[i] &gt; ints[j] &amp;&amp; l2r[i] &lt; l2r[j] + 1) {
+                    l2r[i] = l2r[j] + 1;
+                }
+            }
+        }
+        return l2r;
+    }
+
+    public int[] R2L(int[] ints) {
+        int len = ints.length;
+        int[] r2l = new int[len];
+        r2l[len - 1] = 1;
+        for (int i = len - 2; i &gt; -1; i--) {
+            r2l[i] = 1;
+            for (int j = i + 1; j &lt; len; j++) {
+                if (ints[i] &gt; ints[j] &amp;&amp; r2l[i] &lt; r2l[j] + 1) {
+                    r2l[i] = r2l[j] + 1;
+                }
+            }
+        }
+        return r2l;
+    }
+
+    public static &lt;T&gt; List&lt;T&gt; deepCopy(List&lt;T&gt; src) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(byteOut);
+        out.writeObject(src);
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(byteIn);
+        @SuppressWarnings(&quot;unchecked&quot;)
+        List&lt;T&gt; dest = (List&lt;T&gt;) in.readObject();
+        return dest;
+    }
+}
+</code></pre>
+
+							</section>
+							<section id="seven" class="main">
+
+<h3>8. 调整数组使差最小</h3>
+<blockquote><p>Description</p>
+<p>有两个序列 a,b，大小都为 n,序列元素的值任意整数，无序； 要求：通过交换 a,b 中的元素，使[序列 a 元素的和]与[序列 b 元素的和]之间的差最小。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入为两行，分别为两个数组，每个值用空格隔开。</p>
+<p>Output</p>
+<p>输出变化之后的两个数组内元素和的差绝对值。</p>
+<p>Sample Input 1</p>
+<p>1
+100 99 98 1 2 3
+1 2 3 4 5 40</p>
+<p>Sample Output 1</p>
+<p>48</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Arrays;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Main {
+    int OFFSET;
+    int[] A;
+    int sigma;
+    int N;
+    int minDiff = Integer.MAX_VALUE;
+    Stack&lt;Integer&gt; tracer = new Stack&lt;&gt;();
+    Stack&lt;Integer&gt; bestDiffStack = new Stack&lt;&gt;();
+
+
+    public Main(int[] A) throws Exception {
+        this.A = A;
+        this.init();
+    }
+
+    private void init() throws Exception {
+        if (A.length % 2 != 0)
+            throw new Exception();
+        N = A.length / 2;
+
+        Arrays.sort(A);
+
+        if (A[0] &lt; 0) {
+            OFFSET = -A[0];
+            for (int i = 0; i &lt; A.length; i++) {
+                A[i] += OFFSET;
+            }
+        }
+        for (int i = 0; i &lt; A.length; i++) {
+            sigma += A[i];
+        }
+    }
+
+    private void print() {
+
+//        System.out.format(&quot;best partition difference is: %d%n&quot;, minDiff);
+        System.out.println(minDiff);
+
+    }
+
+
+    public void solve(int[] A) {
+        check(A.length - 1, 0, 0, true);
+        print();
+    }
+    private void check(int i, int sum, int count, boolean include) {
+        if (include) {
+            //record the node
+            tracer.push(A[i]);
+
+            sum += A[i];
+            count++;
+        }
+        if (count == N) {
+            int diff = Math.abs(2 * sum - sigma);
+            if (diff &lt; minDiff) {
+                minDiff = diff;
+                //record the best nodes until now
+                bestDiffStack.clear();
+                for (Integer k : tracer) {
+                    bestDiffStack.add(k);
+                }
+            }//else: just throw away this combination
+        } else {
+            if (sigma &lt;= 2 * sum) {
+                //prune the tree: choose the remaining least numbers
+                int remainCount = N - count;
+                for (int j = 0; j &lt; remainCount; j++) {
+                    sum += A[j];
+                }
+                int diff = Math.abs(2 * sum - sigma);
+                if (diff &lt; minDiff) {
+                    minDiff = diff;
+                    //record the nodes &quot;1...remainCount&quot;
+                    bestDiffStack.clear();
+                    for (Integer k : tracer) {
+                        bestDiffStack.add(k);
+                    }
+                    for (int j = remainCount - 1; j &gt;= 0; j--) {
+                        bestDiffStack.push(A[j]);
+                    }
+                }//else: just throw away this combination
+            } else {
+                if (i &gt;= 1) {
+                    //traverse the next subtrees in the state-space tree
+                    check(i - 1, sum, count, true);
+                    check(i - 1, sum, count, false);
+                }//else: the check is invalid
+            }
+        }
+        if (include)
+            //backtracking
+            tracer.pop();
+    }
+
+    public static void main(String[] args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        int rounds = scanner.nextInt();
+        scanner.nextLine();
+        for (int round = 0; round &lt; rounds; round++) {
+            String line1 = scanner.nextLine();
+            String line2 = scanner.nextLine();
+            if (line1 != &quot;&quot; &amp;&amp; line2 != &quot;&quot;) {
+                String[] strings1 = line1.split(&quot; &quot;);
+                String[] strings2 = line2.split(&quot; &quot;);
+                int[] A = new int[strings1.length * 2];
+                for (int i = 0; i &lt; strings1.length; i++) {
+                    A[i] = Integer.parseInt(strings1[i]);
+                    A[strings1.length + i] = Integer.parseInt(strings2[i]);
+                }
+                Main bs = new Main(A);
+                bs.solve(A);
+            }
+        }
+       
+    }
+}
+</code></pre>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Say Something</h2>
+							<p>Just keep going on~~~<br/>
+							Optimism is the essential part of life<br/>
+							Whatever it happens in life 
+							it will be ok<br/>
+							There is nothing important except life<br/>
+							Alive with love <br/>
+						You can make it</p>
+							
+						</section>
+						<section>
+							<h2>Contact</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>NanJing University,HanKou Roud NO.22</dd>
+								<dt>Phone</dt>
+								<dd>188****8500</dd>
+								<dt>Email</dt>
+								<dd><a href="#">gjcbetty@163.com</a></dd>
+							</dl>
+							
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

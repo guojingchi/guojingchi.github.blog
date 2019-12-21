@@ -1,0 +1,398 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>nju_LinkedList</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>LinkedList</h1>
+						<p>链表相关算法整理</p>
+					</header>
+
+
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active"> 链表回文</a></li>
+							<li><a href="#first">链表区间逆序</a></li>
+							
+                           
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="intro" class="main">
+<h3>1. 链表回文</h3>
+<blockquote><p>Description</p>
+<p>判断一个单向链表是否为回文结构。自定义链表数据结构，要求时间复杂度为O(n)，额外空间复杂度为O(1)。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入的每一行的值用空格隔开，第一个值为节点个数，后面为每一个节点值</p>
+<p>Output</p>
+<p>是回文则输出true，不是则输出false，一行表示一个链表的结果。</p>
+<p>Sample Input 1                </p>
+<pre><code>4
+3 1 2 1
+4 1 2 2 1
+3 3 5 3
+6 a b c d c a
+</code></pre>
+<p>Sample Output 1</p>
+<pre><code>true
+true
+true
+false
+</code></pre>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			String str1 = sc.nextLine();
+			//String str2 = sc.nextLine();
+			
+			String[] strArr = str1.split(&quot;\\s+&quot;);
+			
+			Node n = new Node(strArr[1]);
+			for(int i=2;i&lt;strArr.length;i++) {
+				
+				Node newNode = new Node(strArr[i]);
+				
+				if(n==null) {
+					n = newNode;
+				}else {
+					Node temp = n;
+					
+					while(temp.next!=null) {
+						temp = temp.next;
+					}
+					temp.next = newNode;
+				}
+					
+				
+			}
+			
+			boolean flag = isPalindrome3(n);
+			
+			System.out.println(flag);
+			
+			
+			total--;
+		}
+
+	}
+	
+	public static class Node {
+		public String value;
+		public Node next;
+ 
+		public Node(String data) {
+			this.value = data;
+		}
+	} 
+	
+		// need O(1) extra space
+		public static boolean isPalindrome3(Node head) {
+			if (head == null || head.next == null) {
+				return true;
+			}
+			Node n1 = head;//慢指针
+			Node n2 = head;//快指针
+			while (n2.next != null &amp;&amp; n2.next.next != null) { // find mid node
+				n1 = n1.next; // n1 -&gt; mid//奇中点 偶前中点
+				n2 = n2.next.next; // n2 -&gt; end//奇数为终点，偶数倒数第二个数
+			}
+	//！~逆序的时候三个node，一个用来保存下一个节点遍历用，一个前node，一个后node，后node的next指向前node就可以了。不断移动前后node
+			n2 = n1.next; // n2 -&gt; right part first node
+			n1.next = null; // mid.next -&gt; null
+			Node n3 = null;
+			while (n2 != null) { // right part convert
+				//~~逆序的步骤：第一，先将原先的next保存，第二步将原来的next变成last，last移动下一个，原先的node移动下一位。
+				n3 = n2.next; // n3 -&gt; save next node
+				n2.next = n1; // next of right node convert
+				n1 = n2; // n1 move //原先的n1是n2的上一个。n2 = n1.next
+				n2 = n3; // n2 move //移动n2到下一个
+			}
+			n3 = n1; // n3 -&gt; save last node //保存好最后的node，还原要从他开始。
+			n2 = head;// n2 -&gt; left first node //n2重新回到了初试位置
+			boolean res = true;
+			while (n1 != null &amp;&amp; n2 != null) { // check palindrome
+				if (!n1.value.equals(n2.value)) {
+					res = false;
+					break;//注意这里的break
+				}
+				n1 = n1.next; // right to mid
+				n2 = n2.next; //  left to mid
+			}
+			//把打乱的顺序还原回来
+			n1 = n3.next;
+			n3.next = null;//将最后的一个点指向null
+			while (n1 != null) { // recover list
+				n2 = n1.next;
+				n1.next = n3;
+				n3 = n1;
+				n1 = n2;
+			}
+			return res;
+		}
+//	public static int legth(Node A){
+//        Node cur = A;
+//        int len = 0;
+//        while(cur != null){
+//            len++;
+//            cur = cur.next;
+//        }
+//        return len;
+//    }
+//
+//    public static boolean chkPalindrome(Node A){
+//        
+//        int halfLen = legth(A)/2;
+//       Node cur = A;
+//     Node mid = A;
+//       Node newMid = null;
+//
+//        for(int i = 0; i &lt; halfLen;i++){
+//            mid = mid.next;
+//        }
+//        while(mid != null){
+//           Node next = mid.next;
+//            mid.next = newMid;
+//            newMid = mid;
+//            mid = next;
+//        }
+//        while(newMid != null){
+//            if(!cur.value.equals(newMid.value) ){
+//                return false;
+//            }else{
+//                cur = cur.next;
+//                newMid = newMid.next;
+//            }
+//        }
+//        return true;
+//    }
+
+}
+</code></pre>
+							</section>
+							<section id="first" class="main">
+<h3>2. 链表区间逆序</h3>
+<blockquote><p>Description</p>
+<p>将单个链表的每K个节点之间逆序，打印出新链表；最后不足K的节点数不需要逆序；要求时间复杂度为O(n)，额外空间复杂度为O(1)。</p>
+<p>Input</p>
+<p>输入第一行为用例个数， 每个测试用例输入的每一行的值用空格隔开，第一个表示链表长度，中间为节点值，最后代表K。</p>
+<p>Output</p>
+<p>输出的每一行为新的链表，节点值用空格隔开，末尾不要空格。</p>
+<p>Sample Input 1</p>
+<p>2
+8 1 2 3 4 5 6 7 8 3
+8 a b c d e f g h 4</p>
+<p>Sample Output 1</p>
+<p>3 2 1 6 5 4 7 8
+d c b a h g f e</p>
+</blockquote>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			String str1 = sc.nextLine();
+			//String str2 = sc.nextLine();
+			
+			String[] strArr = str1.split(&quot;\\s+&quot;);
+			
+			int nodeLength = Integer.parseInt(strArr[0]);
+			
+			Node n = new Node(strArr[1]);
+			for(int i=2;i&lt;nodeLength+1;i++) {
+				
+				Node newNode = new Node(strArr[i]);
+				
+				if(n==null) {
+					n = newNode;
+				}else {
+					Node temp = n;
+					
+					while(temp.next!=null) {
+						temp = temp.next;
+					}
+					temp.next = newNode;
+				}
+					
+				
+			}
+			
+			int range = Integer.parseInt(strArr[strArr.length-1]);
+			Node lastNode = nodeReverse(n,nodeLength,range);
+			
+			while(nodeLength&gt;0) {
+				
+				if(nodeLength==1)
+					System.out.print(lastNode.value+&quot;\n&quot;);
+				else
+				    System.out.print(lastNode.value+&quot; &quot;);
+				lastNode = lastNode.next;
+				
+				nodeLength--;
+			}
+			
+			total--;
+		}
+
+	}
+	
+	public static class Node {
+		public String value;
+		public Node next;
+ 
+		public Node(String data) {
+			this.value = data;
+		}
+	} 
+	
+	public static Node nodeReverse(Node oldNode,int nodeLength,int range)
+	{
+		if(nodeLength&lt;range||range&lt;=1) {
+			
+			return oldNode;
+		}
+		
+		int count  = 1;
+		
+		Node start = null;
+		Node cur = oldNode;
+		Node next = null;
+		Node fin = null;
+		
+		while(cur!=null) {
+			next = cur.next;
+			
+			if(count==range) {
+				if(fin==null) {
+					start = oldNode;
+					oldNode = cur;
+				}	
+				else {
+					start = fin.next;
+					
+				}
+			
+				reverse(start,fin,cur,next);
+				
+				fin = start;
+				count=0;
+				//oldNode = cur;
+			}
+			
+			count++;
+			
+			cur = next;
+			
+		}
+		return oldNode;
+		
+		
+	}
+	
+	public static void reverse(Node start,Node fin,Node cur,Node next) {
+		
+		Node com1 = start;
+		Node com2 = start.next;
+		Node temp = null;
+		
+		while(com2!=next) {
+			temp = com2.next;
+			com2.next = com1;
+			com1 = com2;
+			com2 = temp;
+		}
+		
+		if(fin!=null) {
+			fin.next = cur;
+		}
+		
+		start.next = next;
+		
+	}
+		
+
+}
+</code></pre>
+
+							</section>
+							
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Say Something</h2>
+							<p>Just keep going on~~~<br/>
+							Optimism is the essential part of life<br/>
+							Whatever it happens in life 
+							it will be ok<br/>
+							There is nothing important except life<br/>
+							Alive with love <br/>
+						You can make it</p>
+							
+						</section>
+						<section>
+							<h2>Contact</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>NanJing University,HanKou Roud NO.22</dd>
+								<dt>Phone</dt>
+								<dd>188****8500</dd>
+								<dt>Email</dt>
+								<dd><a href="#">gjcbetty@163.com</a></dd>
+							</dl>
+							
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

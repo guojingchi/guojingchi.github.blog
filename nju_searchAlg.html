@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>nju_Search</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1>Search</h1>
+						<p>查询相关算法整理</p>
+					</header>
+
+
+					<nav id="nav">
+						<ul>
+							<li><a href="#intro" class="active">按另一个数组排序</a></li>
+							<li><a href="#first">searching1</a></li>
+							<li><a href="#second">searching2</a></li>
+							
+                           
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Content -->
+							<section id="intro" class="main">
+<h3>1. 按另一个数组排序</h3>
+<blockquote><p>Description</p>
+<p>Given two array A1[] and A2[], sort A1 in such a way that the relative order among the elements will be same as those in A2. For the elements not present in A2. Append them at last in sorted order. It is also given that the number of elements in A2[] are smaller than or equal to number of elements in A1[] and A2[] has all distinct elements.</p>
+<p>Input:A1[] = {2, 1, 2, 5, 7, 1, 9, 3, 6, 8, 8} A2[] = {2, 1, 8, 3}Output: A1[] = {2, 2, 1, 1, 8, 8, 3, 5, 6, 7, 9}</p>
+<p>Since 2 is present first in A2[], all occurrences of 2s should appear first in A[], then all occurrences 1s as 1 comes after 2 in A[]. Next all occurrences of 8 and then all occurrences of 3. Finally we print all those elements of A1[] that are not present in A2[]</p>
+<p>Constraints:1 ≤ T ≤ 501 ≤ M ≤ 501 ≤ N ≤ 10 &amp; N ≤ M1 ≤ A1[i], A2[i] ≤ 1000</p>
+<p>Input</p>
+<p>The first line of input contains an integer T denoting the number of test cases. The first line of each test case is M and N. M is the number of elements in A1 and N is the number of elements in A2.The second line of each test case contains M elements. The third line of each test case contains N elements.</p>
+<p>Output</p>
+<p>Print the sorted array according order defined by another array.</p>
+<p>Sample Input 1</p>
+<p>1
+  11 4
+  2 1 2 5 7 1 9 3 6 8 8
+  2 1 8 3</p>
+<p>Sample Output 1</p>
+<p>2 2 1 1 8 8 3 5 6 7 9</p>
+</blockquote>
+
+<pre><code class='language-java' lang='java'>
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Test3 {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		int total = sc.nextInt();
+		
+		
+		while(total&gt;0) {
+	
+		int lengthA1 = sc.nextInt();
+		int lengthA2 = sc.nextInt();
+		
+		int[] arr1 = new int[lengthA1];
+		int[] arr2 = new int[lengthA2];
+
+	    boolean[] state = new boolean[lengthA1];
+	    
+		for(int i=0;i&lt;lengthA1;i++) {
+			
+			arr1[i] = sc.nextInt();
+			state[i]=false;
+		}
+		
+		for(int j=0;j&lt;lengthA2;j++)
+			arr2[j] = sc.nextInt();
+		
+		//数据读取完毕了
+		
+		//结果数组
+		int[] result = new int[lengthA1];
+		
+		int num=0;
+		for(int k =0;k&lt;lengthA2;k++) {
+			
+			for(int i=0;i&lt;lengthA1;i++) {
+				if(arr2[k]==arr1[i]) {
+					result[num] = arr2[k];
+					num++;
+					state[i] = true;
+					
+				}
+					
+			}	
+		}
+		
+		ArrayList&lt;Integer&gt; last = new ArrayList&lt;Integer&gt;();
+		
+		for(int i=0;i&lt;lengthA1;i++) {
+			if(state[i]==false)
+				last.add(arr1[i]);
+		}
+		
+		for(int i=0;i&lt;last.size();i++) {
+			for(int j=i;j&lt;last.size();j++) {
+				if(last.get(i)&gt;last.get(j)) {
+					int temp = last.get(i);
+					last.set(i, last.get(j));
+					last.set(j, temp);
+				}
+			}
+		}
+		
+		
+			for(int i=0;i&lt;last.size();i++) {
+				result[num] = last.get(i);
+				num++;
+			}
+				
+		
+			for(int i=0;i&lt;lengthA1-1;i++) {
+				System.out.print(result[i]+&quot; &quot;);
+			}
+			System.out.print(result[lengthA1-1]);
+			System.out.println();
+			
+		total--;
+		}
+	}
+
+}
+</code></pre>
+							</section>
+							<section id="first" class="main">
+<h3>2. searching1</h3>
+<blockquote><p>Description</p>
+<p>They declared Sonam as bewafa. Although she is not, believe me! She asked a number of queries to people regrading their position in a test. Now its your duty to remove her bewafa tag by answering simple queries. All the students who give test can score from 1 to 10^18. Lower the marks, better the rank. Now instead of directly telling the marks of student they have been assigned groups where marks are distributed in continuous intervals, you have been given l(i) lowest mark of interval i and r(i) highest marks in interval i. So marks distribution in that interval is given as l(i), l(i)+1, l(i)+2 . . . r(i)</p>
+<p>Now Sonam ask queries in which she gives rank of the student (x) and you have to tell marks obtained by that student</p>
+<p>Note: rank1 is better than rank2 and rank2 is better than rank3 and so on and the first interval starts from 1.</p>
+<p>Constraints:1&lt;=T&lt;=50,1&lt;=N&lt;=10^5,1&lt;=Q&lt;=10^5,1&lt;= l(i) &lt; r(i) &lt;=10^18,1&lt;=x&lt;=10^18</p>
+<p>Input</p>
+<p>The first line of input contains an integer T, denoting the no of test cases. Then T test cases follow. Each test case contains two space separated values N and Q denoting the no of groups and number of queries asked respectively. The next line contains N group of two integers separated by space which shows lowest marks in group i ie l(i) and highest marks in group i ie r(i) such that if i &lt; j then r(i) &lt; l(j). The next lines contain Q space separated integers x, denoting rank of student.</p>
+<p>Output</p>
+<p>For each query output marks obtain by student whose rank is x(1&lt;=x&lt;=10^18).</p>
+<p>Sample Input 1</p>
+<p>1
+3 3
+1 10 12 20 22 30
+5 15 25</p>
+<p>Sample Output 1</p>
+<p>5 16 27</p>
+</blockquote>
+<pre><code class='language-c++' lang='c++'>//
+//  main.cpp
+//  cppPra
+//
+//  Created by Hatake on 2019/11/18.
+//  Copyright © 2019 evelyn. All rights reserved.
+//
+
+#include &lt;iostream&gt;
+
+long getGrade(long rank,long lower[],long upper[],long rankCount[],int rankCountLength){
+     long grade = 0;
+            
+    //int rankCountLength =sizeof(rankCount)/sizeof(rankCount[0]);
+    
+   // std::cout&lt;&lt;rankCountLength&lt;&lt;&quot; &quot;;
+    int flag ;
+     flag= rankCountLength+1;
+            
+            for(int i=0;i&lt;rankCountLength;i++) {
+                
+                if(rankCount[i]&gt;=rank) {
+                    flag = i;
+                    break;
+                }
+                    
+            }
+            
+            if(flag==0) {
+                grade = lower[flag]+rank-1;
+               
+            }else if(flag==rankCountLength+1) {
+                grade = rank-rankCount[rankCountLength-1]+upper[rankCountLength-1];
+            }else {
+                grade = rank-rankCount[flag-1]+lower[flag]-1;
+            }
+            
+            
+            
+            return grade;
+}
+
+
+
+int main(int argc, const char * argv[]) {
+    
+    int total = 0;
+    
+    std::cin&gt;&gt;total;
+    
+    while(total&gt;0){
+        int rangeNum;
+        int rankNum;
+        
+        std::cin&gt;&gt;rangeNum;
+        std::cin&gt;&gt;rankNum;
+        
+        long lower[rangeNum];
+        long upper[rangeNum];
+        long rankCount[rangeNum];
+        
+        for(int i=0;i&lt;rangeNum;i++){
+            std::cin&gt;&gt;lower[i];
+            std::cin&gt;&gt;upper[i];
+            
+            if(i==0)
+                rankCount[i] = upper[i]-lower[i]+1;
+            else
+                rankCount[i] = upper[i]-lower[i]+1+rankCount[i-1];
+        }
+        
+        for(int i=0;i&lt;rankNum;i++) {
+            long rank ;
+            std::cin&gt;&gt;rank;
+            long result ;
+            result= getGrade(rank,lower,upper,rankCount,rangeNum);
+           if(i==rankNum-1)
+               std::cout&lt;&lt;result&lt;&lt;&quot; &quot;&lt;&lt;&quot;\n&quot;;
+           else
+              std::cout&lt;&lt;result&lt;&lt;&quot; &quot;;
+        }
+        
+        total--;
+        
+    }
+    
+    return 0;
+}
+
+</code></pre>
+
+							</section>
+							<section id="second" class="main">
+<h3>3. searching2</h3>
+<blockquote><p>Description</p>
+<p>Given n Magnets which are placed linearly, with each magnet to be considered as of point object. Each magnet suffers force from its left sided magnets such that they repel it to the right and vice versa. All forces are repulsive. The force being equal to the distance (1/d , d being the distance). Now given the positions of the magnets, the task to find all the points along the linear line where net force is ZERO.</p>
+<p>Note: Distance have to be calculated with precision of 0.0000000000001.</p>
+<p>Constraints:1&lt;=T&lt;=100,1&lt;=N&lt;=100,1&lt;=M[]&lt;=1000</p>
+<p>Input</p>
+<p>The first line of input contains an integer T denoting the no of test cases. Then T test cases follow. The second line of each test case contains an integer N. Then in the next line are N space separated values of the array M[], denoting the positions of the magnet.</p>
+<p>Output</p>
+<p>For each test case in a new line print the space separated points having net force zero till precised two decimal places.</p>
+<p>Sample Input 1</p>
+<p>2
+    2
+    1 2 
+    4
+    0 10 20 30 </p>
+<p>Sample Output 1</p>
+<p>1.50
+    3.82 15.00 26.18</p>
+</blockquote>
+<p>思路：二分法在每两个相邻的节点之间都找一个位置。</p>
+<pre><code class='language-java' lang='java'>import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		Scanner sc = new Scanner(System.in);
+		
+		
+		int total = Integer.parseInt(sc.nextLine());
+		
+		while(total&gt;0) {
+			
+			int length = Integer.parseInt(sc.nextLine());
+			
+			int arr[] = new int[length];
+			
+			String[] stringArr = sc.nextLine().split(&quot;\\s+&quot;);
+			
+			for(int i=0;i&lt;length;i++)
+				arr[i] = Integer.parseInt(stringArr[i]);
+			
+			getPoints(arr,length);
+			
+			total--;
+		}
+		
+
+	}
+	
+	
+	public static void getPoints(int[] arr,int length) {
+		
+		StringBuilder sb = new StringBuilder();
+		
+		double result = 0;
+		
+		for(int i=0;i&lt;length-1;i++) {
+			
+			double left = arr[i];
+			double right = arr[i+1];
+			
+			while(true) {
+				double mid = (left+right)/2;
+				
+				double curRe = 0;
+				for(int j=0;j&lt;length;j++) {
+					curRe = curRe+1/(mid-arr[j]);
+				}
+				
+				String com = String.format(&quot;%.5f&quot;, curRe);
+				
+				double outCom = Double.valueOf(com);
+				
+				
+				if(outCom==0) {
+					String out = String.format(&quot;%.2f&quot;, mid);
+					sb.append(out+&quot; &quot;);
+					break;
+				}
+				else if(curRe&gt;0)
+					left=mid;
+				else
+					right=mid;
+				
+			}
+			
+		}
+		
+		System.out.println(sb.toString().trim());
+		
+		
+	}
+
+}
+
+</code></pre>
+
+							</section>
+							
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<h2>Say Something</h2>
+							<p>Just keep going on~~~<br/>
+							Optimism is the essential part of life<br/>
+							Whatever it happens in life 
+							it will be ok<br/>
+							There is nothing important except life<br/>
+							Alive with love <br/>
+						You can make it</p>
+							
+						</section>
+						<section>
+							<h2>Contact</h2>
+							<dl class="alt">
+								<dt>Address</dt>
+								<dd>NanJing University,HanKou Roud NO.22</dd>
+								<dt>Phone</dt>
+								<dd>188****8500</dd>
+								<dt>Email</dt>
+								<dd><a href="#">gjcbetty@163.com</a></dd>
+							</dl>
+							
+						</section>
+						
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
